@@ -1,9 +1,8 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { API_CONFIG } from '../config/api.config';
 import { BaseEntity, PageParams, PaginatedResponse } from '../models/base-entity.model';
+import { BaseService } from './base.service';
 
 /**
  * Generic CRUD client for a REST resource that matches the backend's
@@ -14,15 +13,14 @@ import { BaseEntity, PageParams, PaginatedResponse } from '../models/base-entity
  *   export class BuildingApiService extends BaseApiService<Building, BuildingCreate, BuildingUpdate> {
  *     protected resource = 'buildings';
  *   }
+ *
+ * Inherits `http`, `config`, `storage`, `router` from BaseService.
  */
 export abstract class BaseApiService<
   T extends BaseEntity,
   CreateDto = Partial<T>,
   UpdateDto = Partial<T>,
-> {
-  protected http = inject(HttpClient);
-  protected config = inject(API_CONFIG);
-
+> extends BaseService {
   protected abstract resource: string;
 
   protected get url(): string {

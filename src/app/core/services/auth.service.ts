@@ -1,19 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { computed, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 
-import { API_CONFIG } from '../config/api.config';
 import { LoginRequest, Me, TokenPair } from '../models/auth.model';
-import { StorageService } from './storage.service';
+import { BaseService } from './base.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
-  private http = inject(HttpClient);
-  private config = inject(API_CONFIG);
-  private storage = inject(StorageService);
-  private router = inject(Router);
-
+export class AuthService extends BaseService {
   private readonly _me = signal<Me | null>(null);
   readonly me = this._me.asReadonly();
   readonly isAuthenticated = computed(() => this._me() !== null);
