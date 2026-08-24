@@ -1,23 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+import { HasPermissionDirective } from '../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'bms-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <section style="padding: 2rem;">
-      <h1>BMS Dashboard</h1>
-      @if (auth.me(); as me) {
-        <p>Signed in as <strong>{{ me.email }}</strong></p>
-        <p>Roles: {{ me.roles.length ? (me.roles | json) : 'none' }}</p>
-        <p>Permissions: {{ me.permissions.join(', ') || '(none)' }}</p>
-      }
-      <button (click)="auth.logout()">Sign out</button>
-    </section>
-  `,
+  imports: [CommonModule, RouterLink, HasPermissionDirective],
+  templateUrl: './dashboard.component.html',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent {
   protected auth = inject(AuthService);

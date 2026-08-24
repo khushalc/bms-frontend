@@ -1,0 +1,33 @@
+<section class="page">
+  <header class="page__head">
+    <h1>{{ id() ? 'Edit' : 'New' }} building</h1>
+    <a routerLink="/buildings" class="btn btn--ghost">Cancel</a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="stack">
+      <label class="field">
+        <span>Name</span>
+        <input type="text" formControlName="name" />
+      </label>
+      <label class="field">
+        <span>Address</span>
+        <textarea formControlName="address" rows="2"></textarea>
+      </label>
+      <label class="field">
+        <span>Floor count</span>
+        <input type="number" formControlName="floor_count" min="1" max="200" />
+      </label>
+
+      @if (error()) { <p class="error">{{ error() }}</p> }
+
+      <div class="actions">
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

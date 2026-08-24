@@ -1,0 +1,38 @@
+<section class="page">
+  <header class="page__head">
+    <h1>Flats</h1>
+    <a routerLink="/flats/new" class="btn btn--primary" *hasPermission="'flat.write'">
+      + New flat
+    </a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (items().length === 0) {
+    <p class="muted">
+      No flats yet.
+      <a routerLink="/flats/new" *hasPermission="'flat.write'">Add the first one</a>.
+    </p>
+  } @else {
+    <ul class="grid">
+      @for (f of items(); track f.id) {
+        <li class="card">
+          <a [routerLink]="['/flats', f.id]" class="card__link">
+            <div class="card__row">
+              <h3>{{ f.number }}</h3>
+              <span class="badge">Floor {{ f.floor }}</span>
+            </div>
+            @if (f.name_on_board) { <p class="muted">{{ f.name_on_board }}</p> }
+            <p class="small muted">
+              {{ f.buildingName ?? 'Building #' + f.building_id }}
+              · {{ f.member_count }}/{{ f.declared_member_count }} members
+              · {{ f.vehicles.length }} vehicle{{ f.vehicles.length === 1 ? '' : 's' }}
+            </p>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

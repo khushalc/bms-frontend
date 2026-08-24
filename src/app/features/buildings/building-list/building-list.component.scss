@@ -1,0 +1,66 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: t.$space-4;
+
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: t.$space-3;
+    margin-bottom: t.$space-4;
+    flex-wrap: wrap;
+
+    h1 { margin: 0; font-size: 1.5rem; }
+  }
+}
+
+.grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: t.$space-3;
+  grid-template-columns: 1fr;
+
+  @include bp.up(sm) { grid-template-columns: repeat(2, 1fr); }
+  @include bp.up(lg) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.card {
+  background: t.$color-surface;
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+
+  &:hover, &:focus-within { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+  &__link {
+    display: block;
+    padding: t.$space-4;
+    min-height: t.$tap-min;
+    h3 { margin: 0 0 t.$space-2; font-size: 1.1rem; }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: t.$tap-min;
+  padding: 0 t.$space-4;
+  border-radius: t.$radius-sm;
+  cursor: pointer;
+  border: 0;
+  &--primary { background: t.$color-primary; color: white; }
+}
+
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }
+.error { color: t.$color-danger; }

@@ -1,0 +1,109 @@
+<section class="page">
+  <header class="page__head">
+    <h1>{{ id() ? 'Edit' : 'New' }} flat</h1>
+    <a routerLink="/flats" class="btn btn--ghost">Cancel</a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="stack">
+
+      <div class="row">
+        <label class="field">
+          <span>Building</span>
+          <select formControlName="building_id" [disabled]="!!id()">
+            <option [ngValue]="0">Select a building…</option>
+            @for (b of buildings(); track b.id) {
+              <option [ngValue]="b.id">{{ b.name }}</option>
+            }
+          </select>
+        </label>
+        <label class="field">
+          <span>Floor</span>
+          <select formControlName="floor" [disabled]="floors().length === 0">
+            @if (floors().length === 0) {
+              <option [ngValue]="1">—</option>
+            } @else {
+              @for (f of floors(); track f) {
+                <option [ngValue]="f">{{ f }}</option>
+              }
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span>Flat number</span>
+          <input type="text" formControlName="number" placeholder="e.g. A-201" />
+        </label>
+        <label class="field">
+          <span>Name on notice board</span>
+          <input type="text" formControlName="name_on_board" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Declared family members</span>
+        <input type="number" formControlName="declared_member_count" min="1" max="50" />
+      </label>
+
+      @if (!id()) {
+        <fieldset class="repeater">
+          <legend>Cars</legend>
+          @for (car of cars.controls; track $index) {
+            <div class="repeater__row" [formGroup]="car">
+              <label class="field">
+                <span>Number *</span>
+                <input type="text" formControlName="number" />
+              </label>
+              <label class="field">
+                <span>Model</span>
+                <input type="text" formControlName="model" />
+              </label>
+              <label class="field">
+                <span>Brand</span>
+                <input type="text" formControlName="brand" />
+              </label>
+              <button type="button" class="btn btn--danger btn--sm" (click)="removeCar($index)">Remove</button>
+            </div>
+          }
+          <button type="button" class="btn btn--ghost btn--sm" (click)="addCar()">+ Add car</button>
+        </fieldset>
+
+        <fieldset class="repeater">
+          <legend>Bikes</legend>
+          @for (bike of bikes.controls; track $index) {
+            <div class="repeater__row" [formGroup]="bike">
+              <label class="field">
+                <span>Number *</span>
+                <input type="text" formControlName="number" />
+              </label>
+              <label class="field">
+                <span>Model</span>
+                <input type="text" formControlName="model" />
+              </label>
+              <label class="field">
+                <span>Brand</span>
+                <input type="text" formControlName="brand" />
+              </label>
+              <button type="button" class="btn btn--danger btn--sm" (click)="removeBike($index)">Remove</button>
+            </div>
+          }
+          <button type="button" class="btn btn--ghost btn--sm" (click)="addBike()">+ Add bike</button>
+        </fieldset>
+      } @else {
+        <p class="muted small">Vehicles are managed on the flat detail page.</p>
+      }
+
+      @if (error()) { <p class="error">{{ error() }}</p> }
+
+      <div class="actions">
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+          {{ saving() ? 'Saving…' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>

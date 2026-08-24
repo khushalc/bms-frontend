@@ -1,0 +1,28 @@
+<section class="page">
+  <header class="page__head">
+    <h1>Buildings</h1>
+    <a routerLink="/buildings/new" class="btn btn--primary" *hasPermission="'building.write'">
+      + New building
+    </a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (items().length === 0) {
+    <p class="muted">No buildings yet.</p>
+  } @else {
+    <ul class="grid">
+      @for (b of items(); track b.id) {
+        <li class="card">
+          <a [routerLink]="['/buildings', b.id, 'edit']" class="card__link">
+            <h3>{{ b.name }}</h3>
+            @if (b.address) { <p class="muted small">{{ b.address }}</p> }
+            <p class="small">{{ b.floor_count }} floor{{ b.floor_count === 1 ? '' : 's' }}</p>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>

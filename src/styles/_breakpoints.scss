@@ -1,0 +1,21 @@
+// Mobile-first breakpoints — always use `min-width` (up).
+// Import in a component .scss:  @use '../../styles/breakpoints' as bp;
+// Then:  @include bp.up(md) { ... }
+@use 'sass:map';
+
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+@mixin up($name) {
+  $bp: map.get($breakpoints, $name);
+  @if $bp == null {
+    @error "unknown breakpoint '#{$name}' (valid: sm, md, lg, xl)";
+  }
+  @media (min-width: $bp) {
+    @content;
+  }
+}

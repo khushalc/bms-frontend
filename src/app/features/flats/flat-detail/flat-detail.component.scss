@@ -1,0 +1,80 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: t.$space-3; margin-bottom: t.$space-6; flex-wrap: wrap;
+    h1 { margin: t.$space-2 0 t.$space-1; font-size: 1.75rem; }
+    .back { font-size: 0.875rem; color: t.$color-muted; }
+  }
+}
+
+.block {
+  background: t.$color-surface;
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-md;
+  padding: t.$space-4;
+  margin-bottom: t.$space-4;
+
+  h2 { margin: 0 0 t.$space-3; font-size: 1.15rem; }
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: t.$space-3; margin-bottom: t.$space-3; flex-wrap: wrap;
+    h2 { margin: 0; }
+  }
+}
+
+.list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: t.$space-2;
+
+  &__item {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: t.$space-3;
+    padding: t.$space-3;
+    background: t.$color-bg;
+    border-radius: t.$radius-sm;
+    flex-wrap: wrap;
+  }
+}
+
+.member {
+  &__main { flex: 1 1 250px; }
+  &__row { display: flex; align-items: center; gap: t.$space-2; flex-wrap: wrap; }
+  &__actions {
+    display: flex; gap: t.$space-2;
+    @media (max-width: 480px) { width: 100%; }
+  }
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 2px t.$space-2;
+  border-radius: t.$radius-sm;
+  background: t.$color-primary;
+  color: white;
+
+  &--committee { background: t.$color-success; }
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: t.$tap-min; padding: 0 t.$space-4;
+  border-radius: t.$radius-sm; cursor: pointer; border: 0;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &--primary { background: t.$color-primary; color: white; }
+  &--ghost { background: transparent; border: 1px solid t.$color-border; }
+  &--danger { background: t.$color-danger; color: white; }
+  &--sm { min-height: 36px; padding: 0 t.$space-3; font-size: 0.875rem; }
+}
+
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }
+.error { color: t.$color-danger; }

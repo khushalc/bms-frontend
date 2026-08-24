@@ -1,0 +1,34 @@
+<section class="page">
+  <header class="page__head">
+    <div>
+      <h1>BMS Dashboard</h1>
+      @if (auth.me(); as me) {
+        <p class="muted small">Signed in as <strong>{{ me.email }}</strong></p>
+      }
+    </div>
+    <button class="btn btn--ghost" (click)="auth.logout()">Sign out</button>
+  </header>
+
+  <nav class="tiles">
+    <a routerLink="/buildings" class="tile" *hasPermission="'building.read'">
+      <h2>Buildings</h2>
+      <p class="small muted">Manage buildings + floors</p>
+    </a>
+    <a routerLink="/flats" class="tile" *hasPermission="'flat.read'">
+      <h2>Flats</h2>
+      <p class="small muted">Flats, vehicles, members</p>
+    </a>
+  </nav>
+
+  @if (auth.me(); as me) {
+    <section class="me">
+      <h2>Your access</h2>
+      <p class="small">
+        Roles: {{ me.roles.length ? (me.roles | json) : '—' }}
+      </p>
+      <p class="small">
+        Permissions: <code>{{ me.permissions.join(', ') || '—' }}</code>
+      </p>
+    </section>
+  }
+</section>

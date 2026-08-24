@@ -1,0 +1,110 @@
+import { CommonModule } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
+import { FlatApiService } from '../../../core/services/flat-api.service';
+import { FlatMemberApiService } from '../../../core/services/flat-member-api.service';
+import { Flat } from '../../../core/models/flat.model';
+import { FlatMemberListItem } from '../../../core/models/flat-member.model';
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
+import { MemberFormComponent } from '../members/member-form/member-form.component';
+
+@Component({
+  selector: 'bms-flat-detail',
+  standalone: true,
+  imports: [CommonModule, RouterLink, HasPermissionDirective, MemberFormComponent],
+  templateUrl: './flat-detail.component.html',
+  styleUrl: './flat-detail.component.scss',
+})
+export class FlatDetailComponent implements OnInit {
+  private flatApi = inject(FlatApiService);
+  private memberApi = inject(FlatMemberApiService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
+  loading = signal(true);
+  error = signal<string | null>(null);
+  flat = signal<Flat | null>(null);
+  members = signal<FlatMemberListItem[]>([]);
+
+  showMemberForm = signal(false);
+  editingMemberId = signal<number | null>(null);
+
+  canAddMember = computed(() => {
+    const f = this.flat();
+    return !!f && this.members().length < f.declared_member_count;
+  });
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    const flatId = Number(this.route.snapshot.paramMap.get('id'));
+    if (!flatId) return;
+    this.loading.set(true);
+    forkJoin({
+      flat: this.flatApi.detail(flatId),
+      members: this.memberApi.list(flatId),
+    }).subscribe({
+      next: ({ flat, members }) => {
+        this.flat.set(flat);
+        this.members.set(members);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err?.error?.message ?? 'Failed to load flat');
+        this.loading.set(false);
+      },
+    });
+  }
+
+  openAddMember(): void {
+    this.editingMemberId.set(null);
+    this.showMemberForm.set(true);
+  }
+
+  openEditMember(m: FlatMemberListItem): void {
+    this.editingMemberId.set(m.id);
+    this.showMemberForm.set(true);
+  }
+
+  onMemberSaved(): void {
+    this.showMemberForm.set(false);
+    this.editingMemberId.set(null);
+    this.load();
+  }
+
+  onMemberCancel(): void {
+    this.showMemberForm.set(false);
+    this.editingMemberId.set(null);
+  }
+
+  removeMember(m: FlatMemberListItem): void {
+    if (!confirm(`Remove ${m.first_name} ${m.last_name} from the flat?`)) return;
+    this.memberApi.delete(m.flat_id, m.id).subscribe({
+      next: () => this.load(),
+      error: (err) => alert(err?.error?.message ?? 'Delete failed'),
+    });
+  }
+
+  removeVehicle(vehicleId: number): void {
+    const f = this.flat();
+    if (!f) return;
+    if (!confirm('Remove this vehicle?')) return;
+    this.flatApi.deleteVehicle(f.id, vehicleId).subscribe({
+      next: () => this.load(),
+      error: (err) => alert(err?.error?.message ?? 'Delete failed'),
+    });
+  }
+
+  roleLabel(role: string): string {
+    switch (role) {
+      case 'primary': return 'Primary member';
+      case 'co_applicant': return 'Co-applicant';
+      case 'family': return 'Family member';
+      default: return role;
+    }
+  }
+}
