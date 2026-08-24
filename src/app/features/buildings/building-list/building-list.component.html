@@ -17,7 +17,10 @@
       @for (b of items(); track b.id) {
         <li class="card">
           <a [routerLink]="['/buildings', b.id, 'edit']" class="card__link">
-            <h3>{{ b.name }}</h3>
+            <div class="card__row">
+              <h3>{{ b.name }}</h3>
+              <span class="badge">#{{ b.number }}</span>
+            </div>
             @if (b.address) { <p class="muted small">{{ b.address }}</p> }
             <p class="small">{{ b.floor_count }} floor{{ b.floor_count === 1 ? '' : 's' }}</p>
           </a>

@@ -45,8 +45,21 @@
     display: block;
     padding: t.$space-4;
     min-height: t.$tap-min;
-    h3 { margin: 0 0 t.$space-2; font-size: 1.1rem; }
+    h3 { margin: 0; font-size: 1.1rem; }
   }
+
+  &__row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: t.$space-2; margin-bottom: t.$space-2;
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 2px t.$space-2;
+  border-radius: t.$radius-sm;
+  background: t.$color-bg;
+  border: 1px solid t.$color-border;
 }
 
 .btn {

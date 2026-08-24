@@ -29,6 +29,25 @@
   textarea { padding: t.$space-2 t.$space-3; }
 }
 
+.row {
+  display: grid; gap: t.$space-3; grid-template-columns: 1fr;
+  @include bp.up(sm) { grid-template-columns: 1fr 1fr; }
+}
+
+.amenities {
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-md;
+  padding: t.$space-3 t.$space-4;
+  display: flex; flex-direction: column; gap: t.$space-2;
+  legend { font-weight: 600; padding: 0 t.$space-2; font-size: 0.875rem; }
+}
+
+.checkbox {
+  display: flex; align-items: center; gap: t.$space-2;
+  min-height: t.$tap-min;
+  input[type="checkbox"] { width: 20px; height: 20px; }
+}
+
 .actions { display: flex; gap: t.$space-3; justify-content: flex-end; }
 
 .btn {

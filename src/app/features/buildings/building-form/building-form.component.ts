@@ -25,8 +25,14 @@ export class BuildingFormComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
+    number: ['', [Validators.required, Validators.maxLength(50)]],
     address: [''],
     floor_count: [1, [Validators.required, Validators.min(1), Validators.max(200)]],
+    declared_flat_count: [0, [Validators.min(0), Validators.max(10000)]],
+    gst_number: ['', [Validators.maxLength(20)]],
+    mahada_bmc_registration_number: ['', [Validators.maxLength(100)]],
+    has_gym: [false],
+    has_swimming_pool: [false],
   });
 
   ngOnInit(): void {
@@ -39,8 +45,14 @@ export class BuildingFormComponent implements OnInit {
         next: (b) => {
           this.form.patchValue({
             name: b.name,
+            number: b.number,
             address: b.address ?? '',
             floor_count: b.floor_count,
+            declared_flat_count: b.declared_flat_count ?? 0,
+            gst_number: b.gst_number ?? '',
+            mahada_bmc_registration_number: b.mahada_bmc_registration_number ?? '',
+            has_gym: b.has_gym ?? false,
+            has_swimming_pool: b.has_swimming_pool ?? false,
           });
           this.loading.set(false);
         },
@@ -53,7 +65,19 @@ export class BuildingFormComponent implements OnInit {
     if (this.form.invalid || this.saving()) return;
     this.saving.set(true);
     this.error.set(null);
-    const payload = this.form.getRawValue();
+    const v = this.form.getRawValue();
+    // normalize empty optional strings to null so backend sees "unset"
+    const payload = {
+      name: v.name,
+      number: v.number,
+      address: v.address || null,
+      floor_count: v.floor_count,
+      declared_flat_count: v.declared_flat_count,
+      gst_number: v.gst_number || null,
+      mahada_bmc_registration_number: v.mahada_bmc_registration_number || null,
+      has_gym: v.has_gym,
+      has_swimming_pool: v.has_swimming_pool,
+    };
     const req = this.id()
       ? this.api.update(this.id()!, payload)
       : this.api.create(payload);

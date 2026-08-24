@@ -23,12 +23,30 @@
   @if (auth.me(); as me) {
     <section class="me">
       <h2>Your access</h2>
-      <p class="small">
-        Roles: {{ me.roles.length ? (me.roles | json) : '—' }}
-      </p>
-      <p class="small">
-        Permissions: <code>{{ me.permissions.join(', ') || '—' }}</code>
-      </p>
+      <div class="me__row">
+        <span class="label">Roles</span>
+        @if (me.roles.length) {
+          <div class="chips">
+            @for (r of me.roles; track r.id) {
+              <span class="chip" [class.chip--system]="r.is_system">{{ r.name }}</span>
+            }
+          </div>
+        } @else {
+          <span class="muted">—</span>
+        }
+      </div>
+      <div class="me__row">
+        <span class="label">Permissions ({{ me.permissions.length }})</span>
+        @if (me.permissions.length) {
+          <div class="chips">
+            @for (p of me.permissions; track p) {
+              <span class="chip chip--perm">{{ p }}</span>
+            }
+          </div>
+        } @else {
+          <span class="muted">—</span>
+        }
+      </div>
     </section>
   }
 </section>

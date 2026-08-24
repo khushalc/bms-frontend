@@ -39,8 +39,51 @@
   border: 1px solid t.$color-border;
   border-radius: t.$radius-md;
   padding: t.$space-4;
-  h2 { margin: 0 0 t.$space-2; font-size: 1.1rem; }
-  code { background: t.$color-bg; padding: 2px 6px; border-radius: 4px; word-break: break-word; }
+  h2 { margin: 0 0 t.$space-3; font-size: 1.1rem; }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: t.$space-2;
+    padding: t.$space-3 0;
+    border-bottom: 1px solid t.$color-border;
+    &:last-child { border-bottom: 0; padding-bottom: 0; }
+    &:first-of-type { padding-top: 0; }
+
+    @include bp.up(sm) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: t.$space-4;
+    }
+  }
+}
+
+.label {
+  font-size: 0.875rem;
+  color: t.$color-muted;
+  flex: 0 0 auto;
+  @include bp.up(sm) { min-width: 160px; }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: t.$space-2;
+  flex: 1 1 auto;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px t.$space-2;
+  font-size: 0.75rem;
+  background: t.$color-bg;
+  border: 1px solid t.$color-border;
+  border-radius: 999px;
+  color: t.$color-text;
+
+  &--system { background: t.$color-primary; color: white; border-color: t.$color-primary; }
+  &--perm { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.7rem; }
 }
 
 .btn {
