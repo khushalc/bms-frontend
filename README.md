@@ -125,6 +125,13 @@ Whitelist of env vars (see `scripts/build-environment.mjs`):
 Values are **baked into the client bundle at build time**. Never put secrets in
 `.env` — everything ships to the browser.
 
+> ⚠️ The generated `src/environments/environment*.ts` files are **gitignored**
+> (each dev's `.env` values would otherwise leak into commits). `npm start`,
+> `npm run build`, and `npm test` regenerate them automatically via their
+> pre-scripts. If you invoke `npx ng build` / `npx ng serve` directly (bypassing
+> npm scripts), run `npm run env:dev` (or `env:test` / `env:prod`) once first
+> so `environment.ts` exists.
+
 ### Tests
 
 ```bash
