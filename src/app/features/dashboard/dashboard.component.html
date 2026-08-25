@@ -18,6 +18,14 @@
       <h2>Flats</h2>
       <p class="small muted">Flats, vehicles, members</p>
     </a>
+    <a routerLink="/roles" class="tile" *hasPermission="'role.read'">
+      <h2>Roles</h2>
+      <p class="small muted">System + custom roles + permissions</p>
+    </a>
+    <a routerLink="/permissions" class="tile" *hasPermission="'permission.read'">
+      <h2>Permissions</h2>
+      <p class="small muted">Add or edit permission keys</p>
+    </a>
   </nav>
 
   @if (auth.me(); as me) {

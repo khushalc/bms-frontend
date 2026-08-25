@@ -75,5 +75,51 @@ export const routes: Routes = [
       ),
   },
 
+  // Roles
+  {
+    path: 'roles',
+    canActivate: [authGuard, permissionGuard('role.read')],
+    loadComponent: () =>
+      import('./features/roles/role-list/role-list.component').then((m) => m.RoleListComponent),
+  },
+  {
+    path: 'roles/new',
+    canActivate: [authGuard, permissionGuard('role.write')],
+    loadComponent: () =>
+      import('./features/roles/role-form/role-form.component').then((m) => m.RoleFormComponent),
+  },
+  {
+    path: 'roles/:id/edit',
+    canActivate: [authGuard, permissionGuard('role.write')],
+    loadComponent: () =>
+      import('./features/roles/role-form/role-form.component').then((m) => m.RoleFormComponent),
+  },
+
+  // Permissions
+  {
+    path: 'permissions',
+    canActivate: [authGuard, permissionGuard('permission.read')],
+    loadComponent: () =>
+      import('./features/permissions/permission-list/permission-list.component').then(
+        (m) => m.PermissionListComponent,
+      ),
+  },
+  {
+    path: 'permissions/new',
+    canActivate: [authGuard, permissionGuard('permission.write')],
+    loadComponent: () =>
+      import('./features/permissions/permission-form/permission-form.component').then(
+        (m) => m.PermissionFormComponent,
+      ),
+  },
+  {
+    path: 'permissions/:id/edit',
+    canActivate: [authGuard, permissionGuard('permission.write')],
+    loadComponent: () =>
+      import('./features/permissions/permission-form/permission-form.component').then(
+        (m) => m.PermissionFormComponent,
+      ),
+  },
+
   { path: '**', redirectTo: '' },
 ];

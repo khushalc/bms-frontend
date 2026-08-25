@@ -1,0 +1,55 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 900px; margin: 0 auto; padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: t.$space-3; margin-bottom: t.$space-4; flex-wrap: wrap;
+    h1 { margin: 0; font-size: 1.5rem; }
+  }
+}
+
+.list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: t.$space-2; }
+
+.row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: t.$space-3;
+  background: t.$color-surface;
+  border: 1px solid t.$color-border;
+  border-radius: t.$radius-md;
+  padding: t.$space-3 t.$space-4;
+  flex-wrap: wrap;
+
+  &__main { flex: 1 1 250px; }
+  &__title { display: flex; align-items: center; gap: t.$space-2; }
+  &__actions { display: flex; gap: t.$space-2; @media (max-width: 480px) { width: 100%; } }
+}
+
+code {
+  background: t.$color-bg; padding: 2px 6px; border-radius: t.$radius-sm;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem;
+}
+
+.badge {
+  font-size: 0.7rem; padding: 2px t.$space-2; border-radius: 999px;
+  background: t.$color-bg; border: 1px solid t.$color-border;
+  &--custom { background: t.$color-success; color: white; border-color: t.$color-success; }
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: t.$tap-min; padding: 0 t.$space-4;
+  border-radius: t.$radius-sm; cursor: pointer; border: 0;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &--primary { background: t.$color-primary; color: white; }
+  &--ghost { background: transparent; border: 1px solid t.$color-border; }
+  &--danger { background: t.$color-danger; color: white; }
+  &--sm { min-height: 36px; padding: 0 t.$space-3; font-size: 0.875rem; }
+}
+
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }
+.error { color: t.$color-danger; }

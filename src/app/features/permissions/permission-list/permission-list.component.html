@@ -1,0 +1,34 @@
+<section class="page">
+  <header class="page__head">
+    <h1>Permissions</h1>
+    <a routerLink="/permissions/new" class="btn btn--primary" *hasPermission="'permission.write'">
+      + New permission
+    </a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (items().length === 0) {
+    <p class="muted">No permissions.</p>
+  } @else {
+    <ul class="list">
+      @for (p of items(); track p.id) {
+        <li class="row">
+          <div class="row__main">
+            <div class="row__title">
+              <code>{{ p.key }}</code>
+              @if (p.is_custom) { <span class="badge badge--custom">custom</span> }
+            </div>
+            <p class="muted small">{{ p.name }}@if (p.description) { — {{ p.description }} }</p>
+          </div>
+          <div class="row__actions">
+            <a [routerLink]="['/permissions', p.id, 'edit']" class="btn btn--ghost btn--sm" *hasPermission="'permission.write'">Edit</a>
+            <button class="btn btn--danger btn--sm" (click)="remove(p)" *hasPermission="'permission.delete'">Delete</button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

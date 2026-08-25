@@ -1,0 +1,43 @@
+<section class="page">
+  <header class="page__head">
+    <h1>{{ id() ? 'Edit' : 'New' }} permission</h1>
+    <a routerLink="/permissions" class="btn btn--ghost">Cancel</a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="stack">
+      <fieldset class="fields" [disabled]="saving()">
+        <label class="field">
+          <span>Key <small class="muted">(e.g. building.read, user.disable)</small></span>
+          <input type="text" formControlName="key" placeholder="resource.action" />
+          @if (form.controls.key.dirty && form.controls.key.errors?.['pattern']) {
+            <small class="error">lowercase letters, digits, dot, underscore only; must start with a letter</small>
+          }
+        </label>
+        <label class="field">
+          <span>Display name</span>
+          <input type="text" formControlName="name" />
+        </label>
+        <label class="field">
+          <span>Description <small class="muted">(optional)</small></span>
+          <textarea formControlName="description" rows="2"></textarea>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" formControlName="is_custom" />
+          <span>Custom permission</span>
+        </label>
+      </fieldset>
+
+      @if (error()) { <p class="error">{{ error() }}</p> }
+
+      <div class="actions">
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+          @if (saving()) { <span class="spinner" aria-hidden="true"></span> Saving… }
+          @else { Save }
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -1,0 +1,35 @@
+<section class="page">
+  <header class="page__head">
+    <h1>Roles</h1>
+    <a routerLink="/roles/new" class="btn btn--primary" *hasPermission="'role.write'">+ New role</a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (items().length === 0) {
+    <p class="muted">No roles.</p>
+  } @else {
+    <ul class="list">
+      @for (r of items(); track r.id) {
+        <li class="row">
+          <div class="row__main">
+            <div class="row__title">
+              <strong>{{ r.name }}</strong>
+              @if (r.is_system) { <span class="badge badge--system">system</span> }
+              <span class="badge">{{ r.permissions.length }} perms</span>
+            </div>
+            @if (r.description) { <p class="muted small">{{ r.description }}</p> }
+          </div>
+          <div class="row__actions">
+            <a [routerLink]="['/roles', r.id, 'edit']" class="btn btn--ghost btn--sm" *hasPermission="'role.write'">Edit</a>
+            @if (!r.is_system) {
+              <button class="btn btn--danger btn--sm" (click)="remove(r)" *hasPermission="'role.delete'">Delete</button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
