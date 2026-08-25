@@ -1,35 +1,79 @@
 <section class="page">
   <header class="page__head">
-    <h1>Roles</h1>
-    <a routerLink="/roles/new" class="btn btn--primary" *hasPermission="'role.write'">+ New role</a>
+    <div><h1>Roles</h1></div>
+    <a routerLink="/roles/new" mat-flat-button color="primary" *hasPermission="'role.write'">
+      <mat-icon>add</mat-icon> New role
+    </a>
   </header>
 
-  @if (loading()) {
-    <p class="muted">Loading…</p>
-  } @else if (error()) {
-    <p class="error">{{ error() }}</p>
-  } @else if (items().length === 0) {
-    <p class="muted">No roles.</p>
-  } @else {
-    <ul class="list">
-      @for (r of items(); track r.id) {
-        <li class="row">
-          <div class="row__main">
-            <div class="row__title">
-              <strong>{{ r.name }}</strong>
-              @if (r.is_system) { <span class="badge badge--system">system</span> }
-              <span class="badge">{{ r.permissions.length }} perms</span>
-            </div>
-            @if (r.description) { <p class="muted small">{{ r.description }}</p> }
-          </div>
-          <div class="row__actions">
-            <a [routerLink]="['/roles', r.id, 'edit']" class="btn btn--ghost btn--sm" *hasPermission="'role.write'">Edit</a>
-            @if (!r.is_system) {
-              <button class="btn btn--danger btn--sm" (click)="remove(r)" *hasPermission="'role.delete'">Delete</button>
-            }
-          </div>
-        </li>
-      }
-    </ul>
-  }
+  <div class="filters">
+    <mat-form-field appearance="outline" class="filters__search">
+      <mat-label>Filter roles</mat-label>
+      <input matInput [formControl]="filter" placeholder="Name or description" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let r"><strong>{{ r.name }}</strong></td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let r" class="muted">{{ r.description || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="system">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let r">
+          @if (r.is_system) { <span class="pill pill--system">system</span> }
+          @else { <span class="pill">custom</span> }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="perm_count">
+        <th mat-header-cell *matHeaderCellDef>Permissions</th>
+        <td mat-cell *matCellDef="let r">{{ r.permissions.length }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let r" class="actions">
+          <a [routerLink]="['/roles', r.id, 'edit']" mat-icon-button aria-label="Edit" *hasPermission="'role.write'">
+            <mat-icon>edit</mat-icon>
+          </a>
+          @if (!r.is_system) {
+            <button mat-icon-button color="warn" (click)="remove(r)" aria-label="Delete" *hasPermission="'role.delete'">
+              <mat-icon>delete</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="empty" [attr.colspan]="displayedColumns.length">
+          @if (loading()) { Loading… } @else { No roles. }
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  </div>
 </section>

@@ -1,15 +1,28 @@
-/* Global styles — keep tiny. Per-component .scss should own its own rules. */
+/* Global styles + Angular Material 3 (M3) theme */
+@use '@angular/material' as mat;
 @use './styles/tokens' as t;
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
 
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
   background: t.$color-bg;
   color: t.$color-text;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-    Cantarell, 'Helvetica Neue', sans-serif;
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -17,5 +30,4 @@ html, body {
 }
 
 a { color: inherit; text-decoration: none; }
-
 button, input, select, textarea { font: inherit; }

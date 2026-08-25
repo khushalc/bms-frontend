@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '../../core/services/auth.service';
-import { HasPermissionDirective } from '../../shared/directives/has-permission.directive';
 
 @Component({
   selector: 'bms-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, HasPermissionDirective],
+  imports: [CommonModule, MatCardModule, MatChipsModule, MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

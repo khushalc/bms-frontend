@@ -1,60 +1,43 @@
 <section class="page">
   <header class="page__head">
     <div>
-      <h1>BMS Dashboard</h1>
+      <h1>Welcome{{ auth.me() ? ', ' + (auth.me()!.full_name || auth.me()!.email) : '' }}</h1>
       @if (auth.me(); as me) {
         <p class="muted small">Signed in as <strong>{{ me.email }}</strong></p>
       }
     </div>
-    <button class="btn btn--ghost" (click)="auth.logout()">Sign out</button>
   </header>
 
-  <nav class="tiles">
-    <a routerLink="/buildings" class="tile" *hasPermission="'building.read'">
-      <h2>Buildings</h2>
-      <p class="small muted">Manage buildings + floors</p>
-    </a>
-    <a routerLink="/flats" class="tile" *hasPermission="'flat.read'">
-      <h2>Flats</h2>
-      <p class="small muted">Flats, vehicles, members</p>
-    </a>
-    <a routerLink="/roles" class="tile" *hasPermission="'role.read'">
-      <h2>Roles</h2>
-      <p class="small muted">System + custom roles + permissions</p>
-    </a>
-    <a routerLink="/permissions" class="tile" *hasPermission="'permission.read'">
-      <h2>Permissions</h2>
-      <p class="small muted">Add or edit permission keys</p>
-    </a>
-  </nav>
-
   @if (auth.me(); as me) {
-    <section class="me">
-      <h2>Your access</h2>
-      <div class="me__row">
-        <span class="label">Roles</span>
-        @if (me.roles.length) {
-          <div class="chips">
-            @for (r of me.roles; track r.id) {
-              <span class="chip" [class.chip--system]="r.is_system">{{ r.name }}</span>
-            }
-          </div>
-        } @else {
-          <span class="muted">—</span>
-        }
-      </div>
-      <div class="me__row">
-        <span class="label">Permissions ({{ me.permissions.length }})</span>
-        @if (me.permissions.length) {
-          <div class="chips">
-            @for (p of me.permissions; track p) {
-              <span class="chip chip--perm">{{ p }}</span>
-            }
-          </div>
-        } @else {
-          <span class="muted">—</span>
-        }
-      </div>
-    </section>
+    <mat-card class="access">
+      <mat-card-header>
+        <mat-card-title>Your access</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="access__row">
+          <span class="label">Roles</span>
+          @if (me.roles.length) {
+            <mat-chip-set>
+              @for (r of me.roles; track r.id) {
+                <mat-chip [highlighted]="r.is_system">
+                  @if (r.is_system) { <mat-icon matChipAvatar>verified</mat-icon> }
+                  {{ r.name }}
+                </mat-chip>
+              }
+            </mat-chip-set>
+          } @else { <span class="muted">—</span> }
+        </div>
+        <div class="access__row">
+          <span class="label">Permissions ({{ me.permissions.length }})</span>
+          @if (me.permissions.length) {
+            <mat-chip-set>
+              @for (p of me.permissions; track p) {
+                <mat-chip class="perm">{{ p }}</mat-chip>
+              }
+            </mat-chip-set>
+          } @else { <span class="muted">—</span> }
+        </div>
+      </mat-card-content>
+    </mat-card>
   }
 </section>

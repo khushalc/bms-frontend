@@ -1,0 +1,66 @@
+<mat-sidenav-container class="shell" [hasBackdrop]="isMobile()">
+
+  <mat-sidenav
+    #drawer
+    class="shell__nav"
+    [mode]="isMobile() ? 'over' : 'side'"
+    [opened]="!isMobile()"
+    [fixedInViewport]="isMobile()"
+  >
+    <div class="brand">
+      <mat-icon>domain</mat-icon>
+      <span>BMS</span>
+    </div>
+    <mat-divider />
+
+    <mat-nav-list class="nav">
+      @for (item of navItems(); track item.path) {
+        @if (canSee(item)) {
+          <a
+            mat-list-item
+            [routerLink]="item.path"
+            [routerLinkActive]="'nav__item--active'"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            (click)="onNavigate()"
+          >
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell__content">
+    <mat-toolbar class="topbar">
+      @if (isMobile()) {
+        <button mat-icon-button (click)="drawer.toggle()" aria-label="Menu">
+          <mat-icon>menu</mat-icon>
+        </button>
+      }
+      <span class="topbar__title">{{ currentTitle() }}</span>
+      <span class="topbar__spacer"></span>
+      @if (auth.me(); as me) {
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Account">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <div class="user-header">
+            <strong>{{ me.email }}</strong>
+            <small>{{ me.roles.length }} role{{ me.roles.length === 1 ? '' : 's' }}</small>
+          </div>
+          <mat-divider />
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Sign out</span>
+          </button>
+        </mat-menu>
+      }
+    </mat-toolbar>
+
+    <main class="page">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

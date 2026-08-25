@@ -1,0 +1,109 @@
+<section class="page">
+  <header class="page__head">
+    <h1>Members</h1>
+    <p class="muted small">All members across all flats · contact info masked</p>
+  </header>
+
+  <div class="filters">
+    <mat-form-field appearance="outline" class="filters__search">
+      <mat-label>Search name, flat, building</mat-label>
+      <input matInput [formControl]="search" placeholder="e.g. Sharma / A-201 / Rose" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Role</mat-label>
+      <mat-select [formControl]="roleFilter">
+        <mat-option value="">All roles</mat-option>
+        <mat-option value="primary">Primary</mat-option>
+        <mat-option value="co_applicant">Co-applicant</mat-option>
+        <mat-option value="family">Family</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Committee</mat-label>
+      <mat-select [formControl]="committeeFilter">
+        <mat-option value="">Any</mat-option>
+        <mat-option value="true">On committee</mat-option>
+        <mat-option value="false">Not on committee</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let m">
+          <strong>{{ m.first_name }} {{ m.last_name }}</strong>
+          <div class="cell-sub">Age {{ m.age }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="flat">
+        <th mat-header-cell *matHeaderCellDef>Flat</th>
+        <td mat-cell *matCellDef="let m">
+          <a [routerLink]="['/flats', m.flat_id]" class="link">{{ m.flat_number }}</a>
+          <div class="cell-sub">Floor {{ m.flat_floor }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="building">
+        <th mat-header-cell *matHeaderCellDef>Building</th>
+        <td mat-cell *matCellDef="let m">
+          {{ m.building_name }}
+          <div class="cell-sub">#{{ m.building_number }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef>Role</th>
+        <td mat-cell *matCellDef="let m">{{ roleLabel(m.role) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef>Contact</th>
+        <td mat-cell *matCellDef="let m">
+          <div>{{ m.mobile }}</div>
+          @if (m.email) { <div class="cell-sub">{{ m.email }}</div> }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="committee">
+        <th mat-header-cell *matHeaderCellDef>Committee</th>
+        <td mat-cell *matCellDef="let m">
+          @if (m.is_committee_member) {
+            <mat-icon class="chip-icon chip-icon--yes" aria-label="Yes">check_circle</mat-icon>
+          } @else {
+            <span class="muted">—</span>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell empty" [attr.colspan]="displayedColumns.length">
+          @if (loading()) { Loading… }
+          @else { No members found. }
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  </div>
+</section>
