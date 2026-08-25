@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,19 +10,28 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged, forkJoin, map } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
 import { BuildingApiService } from '../../../core/services/building-api.service';
 import { Building } from '../../../core/models/building.model';
 import { FlatApiService } from '../../../core/services/flat-api.service';
 import { Flat } from '../../../core/models/flat.model';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
+import { ActiveFiltersComponent, ActiveFilterChip } from '../../../shared/filters/active-filters.component';
 import { FiltersComponent } from '../../../shared/filters/filters.component';
 
 interface FlatRow extends Flat {
   buildingName?: string;
   buildingNumber?: string;
 }
+
+interface AppliedFilters {
+  number: string;
+  floor: string;
+  nameOnBoard: string;
+  buildingId: number | '';
+}
+const EMPTY: AppliedFilters = { number: '', floor: '', nameOnBoard: '', buildingId: '' };
 
 @Component({
   selector: 'bms-flat-list',
@@ -32,7 +40,7 @@ interface FlatRow extends Flat {
     CommonModule, ReactiveFormsModule, RouterLink, HasPermissionDirective,
     MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
     MatIconModule, MatButtonModule, MatProgressBarModule, MatSelectModule,
-    FiltersComponent,
+    FiltersComponent, ActiveFiltersComponent,
   ],
   templateUrl: './flat-list.component.html',
   styleUrl: './flat-list.component.scss',
@@ -57,37 +65,34 @@ export class FlatListComponent implements OnInit {
   nameOnBoardFilter = new FormControl<string>('', { nonNullable: true });
   buildingFilter = new FormControl<number | ''>('', { nonNullable: true });
 
-  private numSig = toSignal(this.numberFilter.valueChanges, { initialValue: '' });
-  private floorSig = toSignal(this.floorFilter.valueChanges, { initialValue: '' });
-  private nobSig = toSignal(this.nameOnBoardFilter.valueChanges, { initialValue: '' });
-  private buildingSig = toSignal(this.buildingFilter.valueChanges, { initialValue: '' as number | '' });
+  private applied = signal<AppliedFilters>({ ...EMPTY });
 
-  activeFilterCount = computed(() =>
-    [this.numSig(), this.floorSig(), this.nobSig(), this.buildingSig()]
-      .filter((v) => v !== '' && v !== null).length,
-  );
+  activeChips = computed<ActiveFilterChip[]>(() => {
+    const a = this.applied();
+    const chips: ActiveFilterChip[] = [];
+    if (a.number) chips.push({ key: 'number', label: 'Flat #', value: a.number });
+    if (a.floor) chips.push({ key: 'floor', label: 'Floor', value: a.floor });
+    if (a.nameOnBoard) chips.push({ key: 'nameOnBoard', label: 'Name on board', value: a.nameOnBoard });
+    if (a.buildingId !== '') {
+      const b = this.buildings().find((x) => x.id === a.buildingId);
+      chips.push({ key: 'buildingId', label: 'Building', value: b?.name ?? `#${a.buildingId}` });
+    }
+    return chips;
+  });
+
+  activeFilterCount = computed(() => this.activeChips().length);
 
   @ViewChild(MatPaginator) private paginator?: MatPaginator;
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (f) => {
-      const num = this.numberFilter.value.trim().toLowerCase();
-      const fl = this.floorFilter.value.trim();
-      const nob = this.nameOnBoardFilter.value.trim().toLowerCase();
-      const bid = this.buildingFilter.value;
-      if (num && !f.number.toLowerCase().includes(num)) return false;
-      if (fl && String(f.floor) !== fl) return false;
-      if (nob && !(f.name_on_board ?? '').toLowerCase().includes(nob)) return false;
-      if (bid !== '' && f.building_id !== bid) return false;
+      const a = this.applied();
+      if (a.number && !f.number.toLowerCase().includes(a.number.toLowerCase())) return false;
+      if (a.floor && String(f.floor) !== a.floor) return false;
+      if (a.nameOnBoard && !(f.name_on_board ?? '').toLowerCase().includes(a.nameOnBoard.toLowerCase())) return false;
+      if (a.buildingId !== '' && f.building_id !== a.buildingId) return false;
       return true;
     };
-
-    const bump = () => { this.dataSource.filter = String(Date.now()); };
-    this.numberFilter.valueChanges.pipe(debounceTime(150), distinctUntilChanged()).subscribe(bump);
-    this.floorFilter.valueChanges.pipe(debounceTime(150), distinctUntilChanged()).subscribe(bump);
-    this.nameOnBoardFilter.valueChanges.pipe(debounceTime(150), distinctUntilChanged()).subscribe(bump);
-    this.buildingFilter.valueChanges.subscribe(bump);
-
     this.load();
   }
 
@@ -114,6 +119,7 @@ export class FlatListComponent implements OnInit {
           this.dataSource.data = rows;
           this.total.set(total);
           this.buildings.set(buildings);
+          this.reapplyFilter();
           this.loading.set(false);
         },
         error: (err) => {
@@ -129,10 +135,36 @@ export class FlatListComponent implements OnInit {
     this.load();
   }
 
-  clearFilters(): void {
+  onSearch(): void {
+    this.applied.set({
+      number: this.numberFilter.value.trim(),
+      floor: this.floorFilter.value.trim(),
+      nameOnBoard: this.nameOnBoardFilter.value.trim(),
+      buildingId: this.buildingFilter.value,
+    });
+    this.reapplyFilter();
+  }
+
+  onClearAll(): void {
     this.numberFilter.setValue('');
     this.floorFilter.setValue('');
     this.nameOnBoardFilter.setValue('');
     this.buildingFilter.setValue('');
+    this.applied.set({ ...EMPTY });
+    this.reapplyFilter();
+  }
+
+  onRemoveChip(key: string): void {
+    switch (key) {
+      case 'number': this.numberFilter.setValue(''); this.applied.update((a) => ({ ...a, number: '' })); break;
+      case 'floor': this.floorFilter.setValue(''); this.applied.update((a) => ({ ...a, floor: '' })); break;
+      case 'nameOnBoard': this.nameOnBoardFilter.setValue(''); this.applied.update((a) => ({ ...a, nameOnBoard: '' })); break;
+      case 'buildingId': this.buildingFilter.setValue(''); this.applied.update((a) => ({ ...a, buildingId: '' })); break;
+    }
+    this.reapplyFilter();
+  }
+
+  private reapplyFilter(): void {
+    this.dataSource.filter = this.activeFilterCount() === 0 ? '' : String(Date.now());
   }
 }

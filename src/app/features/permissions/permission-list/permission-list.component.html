@@ -5,7 +5,11 @@
       <p class="muted small">Seeded from code (<code>seeds/permissions.py</code>). Name and description are editable here.</p>
     </div>
     <div class="page__actions">
-      <bms-filters [activeCount]="activeFilterCount()" (clear)="clearFilters()">
+      <bms-filters
+        [activeCount]="activeFilterCount()"
+        (search)="onSearch()"
+        (clear)="onClearAll()"
+      >
         <mat-form-field appearance="outline">
           <mat-label>Search key</mat-label>
           <input matInput [formControl]="keyFilter" placeholder="e.g. building.read" />
@@ -34,6 +38,8 @@
       </bms-filters>
     </div>
   </header>
+
+  <bms-active-filters [chips]="activeChips()" (remove)="onRemoveChip($event)" />
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
   @if (error()) { <p class="error">{{ error() }}</p> }

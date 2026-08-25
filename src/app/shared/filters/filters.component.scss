@@ -12,15 +12,16 @@
   max-width: none !important;
   min-width: 300px;
 
-  @include bp.up(sm) { min-width: 360px; }
+  @include bp.up(sm) { min-width: 380px; }
 }
 
 .filters-panel {
   padding: t.$space-3 t.$space-4;
+  display: flex;
+  flex-direction: column;
 
   &__head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: t.$space-3;
+    padding-bottom: t.$space-2;
     border-bottom: 1px solid t.$color-border;
     margin-bottom: t.$space-3;
   }
@@ -28,9 +29,18 @@
   &__body {
     display: flex; flex-direction: column;
     gap: t.$space-3;
-    // let form fields sit at their natural width inside the menu
     mat-form-field { width: 100%; }
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: t.$space-2;
+    padding-top: t.$space-3;
+    margin-top: t.$space-2;
+    border-top: 1px solid t.$color-border;
   }
 }
 
 .clear-btn { font-size: 0.85rem; }
+.search-btn mat-icon { margin-right: 4px; }

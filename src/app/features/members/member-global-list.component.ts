@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,7 +11,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 import { BuildingApiService } from '../../core/services/building-api.service';
 import { Building } from '../../core/models/building.model';
@@ -22,7 +20,16 @@ import {
   GlobalMemberListItem,
   GlobalMemberQuery,
 } from '../../core/services/global-member-api.service';
+import { ActiveFiltersComponent, ActiveFilterChip } from '../../shared/filters/active-filters.component';
 import { FiltersComponent } from '../../shared/filters/filters.component';
+
+interface AppliedFilters {
+  search: string;
+  buildingId: number | '';
+  role: MemberRole | '';
+  committee: '' | 'true' | 'false';
+}
+const EMPTY: AppliedFilters = { search: '', buildingId: '', role: '', committee: '' };
 
 @Component({
   selector: 'bms-member-global-list',
@@ -31,7 +38,7 @@ import { FiltersComponent } from '../../shared/filters/filters.component';
     CommonModule, ReactiveFormsModule, RouterLink,
     MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatIconModule, MatButtonModule, MatChipsModule,
-    MatProgressBarModule, FiltersComponent,
+    MatProgressBarModule, FiltersComponent, ActiveFiltersComponent,
   ],
   templateUrl: './member-global-list.component.html',
   styleUrl: './member-global-list.component.scss',
@@ -51,20 +58,28 @@ export class MemberGlobalListComponent implements OnInit {
   dataSource = new MatTableDataSource<GlobalMemberListItem>([]);
   displayedColumns = ['name', 'flat', 'building', 'role', 'contact', 'committee'];
 
+  // Menu inputs — pending
   search = new FormControl<string>('', { nonNullable: true });
   buildingFilter = new FormControl<number | ''>('', { nonNullable: true });
   roleFilter = new FormControl<MemberRole | ''>('', { nonNullable: true });
   committeeFilter = new FormControl<'' | 'true' | 'false'>('', { nonNullable: true });
 
-  private searchSig = toSignal(this.search.valueChanges, { initialValue: '' });
-  private buildingSig = toSignal(this.buildingFilter.valueChanges, { initialValue: '' as number | '' });
-  private roleSig = toSignal(this.roleFilter.valueChanges, { initialValue: '' as MemberRole | '' });
-  private committeeSig = toSignal(this.committeeFilter.valueChanges, { initialValue: '' as '' | 'true' | 'false' });
+  private applied = signal<AppliedFilters>({ ...EMPTY });
 
-  activeFilterCount = computed(() =>
-    [this.searchSig(), this.buildingSig(), this.roleSig(), this.committeeSig()]
-      .filter((v) => v !== '' && v !== null).length,
-  );
+  activeChips = computed<ActiveFilterChip[]>(() => {
+    const a = this.applied();
+    const chips: ActiveFilterChip[] = [];
+    if (a.search) chips.push({ key: 'search', label: 'Search', value: a.search });
+    if (a.buildingId !== '') {
+      const b = this.buildings().find((x) => x.id === a.buildingId);
+      chips.push({ key: 'buildingId', label: 'Building', value: b?.name ?? `#${a.buildingId}` });
+    }
+    if (a.role) chips.push({ key: 'role', label: 'Role', value: this.roleLabel(a.role) });
+    if (a.committee) chips.push({ key: 'committee', label: 'Committee', value: a.committee === 'true' ? 'On committee' : 'Not on committee' });
+    return chips;
+  });
+
+  activeFilterCount = computed(() => this.activeChips().length);
 
   @ViewChild(MatPaginator) private paginator?: MatPaginator;
 
@@ -73,32 +88,20 @@ export class MemberGlobalListComponent implements OnInit {
       next: (r) => this.buildings.set(r.items),
     });
     this.load();
-    this.search.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe(() => { this.pageIndex.set(0); this.load(); });
-    this.buildingFilter.valueChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(() => { this.pageIndex.set(0); this.load(); });
-    this.roleFilter.valueChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(() => { this.pageIndex.set(0); this.load(); });
-    this.committeeFilter.valueChanges
-      .pipe(distinctUntilChanged())
-      .subscribe(() => { this.pageIndex.set(0); this.load(); });
   }
 
   load(): void {
     this.loading.set(true);
     this.error.set(null);
+    const a = this.applied();
     const q: GlobalMemberQuery = {
       page: this.pageIndex() + 1,
       page_size: this.pageSize(),
     };
-    const s = this.search.value.trim();
-    if (s) q.search = s;
-    if (this.buildingFilter.value !== '') q.building_id = this.buildingFilter.value as number;
-    if (this.roleFilter.value) q.role = this.roleFilter.value as MemberRole;
-    if (this.committeeFilter.value !== '') q.is_committee_member = this.committeeFilter.value === 'true';
+    if (a.search) q.search = a.search;
+    if (a.buildingId !== '') q.building_id = a.buildingId as number;
+    if (a.role) q.role = a.role;
+    if (a.committee !== '') q.is_committee_member = a.committee === 'true';
 
     this.api.list(q).subscribe({
       next: (res) => {
@@ -119,16 +122,39 @@ export class MemberGlobalListComponent implements OnInit {
     this.load();
   }
 
-  clearFilters(): void {
+  onSearch(): void {
+    this.applied.set({
+      search: this.search.value.trim(),
+      buildingId: this.buildingFilter.value,
+      role: this.roleFilter.value,
+      committee: this.committeeFilter.value,
+    });
+    this.pageIndex.set(0);
+    this.load();
+  }
+
+  onClearAll(): void {
     this.search.setValue('');
     this.buildingFilter.setValue('');
     this.roleFilter.setValue('');
     this.committeeFilter.setValue('');
+    this.applied.set({ ...EMPTY });
+    this.pageIndex.set(0);
+    this.load();
+  }
+
+  onRemoveChip(key: string): void {
+    switch (key) {
+      case 'search': this.search.setValue(''); this.applied.update((a) => ({ ...a, search: '' })); break;
+      case 'buildingId': this.buildingFilter.setValue(''); this.applied.update((a) => ({ ...a, buildingId: '' })); break;
+      case 'role': this.roleFilter.setValue(''); this.applied.update((a) => ({ ...a, role: '' })); break;
+      case 'committee': this.committeeFilter.setValue(''); this.applied.update((a) => ({ ...a, committee: '' })); break;
+    }
+    this.pageIndex.set(0);
+    this.load();
   }
 
   roleLabel(r: MemberRole): string {
-    return r === 'primary' ? 'Primary'
-      : r === 'co_applicant' ? 'Co-applicant'
-      : 'Family';
+    return r === 'primary' ? 'Primary' : r === 'co_applicant' ? 'Co-applicant' : 'Family';
   }
 }

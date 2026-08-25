@@ -5,7 +5,11 @@
       <p class="muted small">All members across all flats · contact info masked</p>
     </div>
     <div class="page__actions">
-      <bms-filters [activeCount]="activeFilterCount()" (clear)="clearFilters()">
+      <bms-filters
+        [activeCount]="activeFilterCount()"
+        (search)="onSearch()"
+        (clear)="onClearAll()"
+      >
         <mat-form-field appearance="outline">
           <mat-label>Search name / flat / building</mat-label>
           <input matInput [formControl]="search" placeholder="e.g. Sharma / A-201 / Rose" />
@@ -40,6 +44,8 @@
       </bms-filters>
     </div>
   </header>
+
+  <bms-active-filters [chips]="activeChips()" (remove)="onRemoveChip($event)" />
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
   @if (error()) { <p class="error">{{ error() }}</p> }

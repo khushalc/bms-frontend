@@ -2,7 +2,11 @@
   <header class="page__head">
     <div><h1>Flats</h1></div>
     <div class="page__actions">
-      <bms-filters [activeCount]="activeFilterCount()" (clear)="clearFilters()">
+      <bms-filters
+        [activeCount]="activeFilterCount()"
+        (search)="onSearch()"
+        (clear)="onClearAll()"
+      >
         <mat-form-field appearance="outline">
           <mat-label>Flat number</mat-label>
           <input matInput [formControl]="numberFilter" placeholder="e.g. A-201" />
@@ -30,6 +34,8 @@
       </a>
     </div>
   </header>
+
+  <bms-active-filters [chips]="activeChips()" (remove)="onRemoveChip($event)" />
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
   @if (error()) { <p class="error">{{ error() }}</p> }

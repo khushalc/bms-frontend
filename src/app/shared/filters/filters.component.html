@@ -13,17 +13,20 @@
 </button>
 
 <mat-menu #menu="matMenu" xPosition="before" class="filters-menu-panel">
-  <div class="filters-panel" (click)="stopPropagation($event)" (keydown)="stopPropagation($event)">
+  <div class="filters-panel" (click)="stopPropagation($event)" (keydown)="stopPropagation($event)" (keydown.enter)="onEnter($event)">
     <header class="filters-panel__head">
       <strong>{{ label() }}</strong>
-      @if (activeCount() > 0) {
-        <button mat-button (click)="onClear($event)" class="clear-btn">
-          <mat-icon>clear</mat-icon> Clear all
-        </button>
-      }
     </header>
     <div class="filters-panel__body">
       <ng-content />
     </div>
+    <footer class="filters-panel__foot">
+      <button mat-button (click)="onClear($event)" class="clear-btn">
+        <mat-icon>clear</mat-icon> Clear
+      </button>
+      <button mat-flat-button color="primary" (click)="onSearch($event)" class="search-btn">
+        <mat-icon>search</mat-icon> Search
+      </button>
+    </footer>
   </div>
 </mat-menu>

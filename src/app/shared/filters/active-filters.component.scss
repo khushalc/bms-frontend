@@ -1,0 +1,14 @@
+@use '../../../styles/tokens' as t;
+
+.active-filters {
+  margin-bottom: t.$space-3;
+}
+
+.af-label {
+  color: t.$color-muted;
+  margin-right: 4px;
+}
+
+.af-value {
+  margin-right: 4px;
+}
