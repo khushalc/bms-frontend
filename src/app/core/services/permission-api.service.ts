@@ -3,11 +3,18 @@ import { Injectable } from '@angular/core';
 import { BaseEntity } from '../models/base-entity.model';
 import { BaseApiService } from './base-api.service';
 
+export interface RoleSummary {
+  id: number;
+  name: string;
+  is_system: boolean;
+}
+
 export interface Permission extends BaseEntity {
   key: string;
   name: string;
   description: string | null;
   is_custom: boolean;
+  roles: RoleSummary[];
 }
 
 export interface PermissionCreate {

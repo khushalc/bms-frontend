@@ -2,19 +2,14 @@
 @use '../../../../styles/breakpoints' as bp;
 
 .page {
-  max-width: 1200px; margin: 0 auto; padding: t.$space-4;
+  max-width: 1400px; margin: 0 auto; padding: t.$space-4;
   @include bp.up(md) { padding: t.$space-6; }
 
   &__head {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: flex-start; justify-content: space-between;
     gap: t.$space-3; margin-bottom: t.$space-4; flex-wrap: wrap;
-    h1 { margin: 0; font-size: 1.5rem; }
+    h1 { margin: 0 0 t.$space-1; font-size: 1.5rem; }
   }
-}
-
-.filters {
-  margin-bottom: t.$space-4;
-  &__search { width: 100%; max-width: 480px; }
 }
 
 .table-wrap { background: t.$color-surface; border-radius: t.$radius-md; overflow-x: auto; }
@@ -34,7 +29,14 @@ code {
   &--custom { background: t.$color-success; color: white; border-color: transparent; }
 }
 
+.role-chip-link {
+  text-decoration: none;
+  display: inline-block;
+  margin: 2px;
+}
+
 .cell-sub { font-size: 0.8rem; color: t.$color-muted; margin-top: 2px; }
 .empty { padding: t.$space-6; text-align: center; color: t.$color-muted; }
 .error { color: t.$color-danger; margin: 0 0 t.$space-3; }
 .muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }

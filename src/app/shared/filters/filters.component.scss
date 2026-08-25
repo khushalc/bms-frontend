@@ -1,0 +1,36 @@
+@use '../../../styles/tokens' as t;
+@use '../../../styles/breakpoints' as bp;
+
+.filters-btn {
+  &__label {
+    @media (max-width: 480px) { display: none; }
+  }
+}
+
+// mat-menu panel width override
+::ng-deep .filters-menu-panel {
+  max-width: none !important;
+  min-width: 300px;
+
+  @include bp.up(sm) { min-width: 360px; }
+}
+
+.filters-panel {
+  padding: t.$space-3 t.$space-4;
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: t.$space-3;
+    border-bottom: 1px solid t.$color-border;
+    margin-bottom: t.$space-3;
+  }
+
+  &__body {
+    display: flex; flex-direction: column;
+    gap: t.$space-3;
+    // let form fields sit at their natural width inside the menu
+    mat-form-field { width: 100%; }
+  }
+}
+
+.clear-btn { font-size: 0.85rem; }

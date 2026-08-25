@@ -122,14 +122,8 @@ export const routes: Routes = [
             (m) => m.PermissionListComponent,
           ),
       },
-      {
-        path: 'permissions/new',
-        canActivate: [permissionGuard('permission.write')],
-        loadComponent: () =>
-          import('./features/permissions/permission-form/permission-form.component').then(
-            (m) => m.PermissionFormComponent,
-          ),
-      },
+      // /permissions/new is intentionally omitted — permissions are seeded
+      // from code (seeds/permissions.py) when a new route/endpoint is added.
       {
         path: 'permissions/:id/edit',
         canActivate: [permissionGuard('permission.write')],

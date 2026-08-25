@@ -1,18 +1,35 @@
 <section class="page">
   <header class="page__head">
     <div><h1>Flats</h1></div>
-    <a routerLink="/flats/new" mat-flat-button color="primary" *hasPermission="'flat.write'">
-      <mat-icon>add</mat-icon> New flat
-    </a>
+    <div class="page__actions">
+      <bms-filters [activeCount]="activeFilterCount()" (clear)="clearFilters()">
+        <mat-form-field appearance="outline">
+          <mat-label>Flat number</mat-label>
+          <input matInput [formControl]="numberFilter" placeholder="e.g. A-201" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Floor</mat-label>
+          <input matInput type="number" [formControl]="floorFilter" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Name on board</mat-label>
+          <input matInput [formControl]="nameOnBoardFilter" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Building</mat-label>
+          <mat-select [formControl]="buildingFilter">
+            <mat-option [value]="''">All buildings</mat-option>
+            @for (b of buildings(); track b.id) {
+              <mat-option [value]="b.id">{{ b.name }} <span class="muted">#{{ b.number }}</span></mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </bms-filters>
+      <a routerLink="/flats/new" mat-flat-button color="primary" *hasPermission="'flat.write'">
+        <mat-icon>add</mat-icon> New flat
+      </a>
+    </div>
   </header>
-
-  <div class="filters">
-    <mat-form-field appearance="outline" class="filters__search">
-      <mat-label>Filter flats</mat-label>
-      <input matInput [formControl]="filter" placeholder="Number, floor, name on board, building" />
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-  </div>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
   @if (error()) { <p class="error">{{ error() }}</p> }
@@ -69,7 +86,9 @@
 
       <tr class="mat-row" *matNoDataRow>
         <td class="empty" [attr.colspan]="displayedColumns.length">
-          @if (loading()) { Loading… } @else { No flats yet. }
+          @if (loading()) { Loading… }
+          @else if (activeFilterCount() > 0) { No flats match your filters. }
+          @else { No flats yet. }
         </td>
       </tr>
     </table>

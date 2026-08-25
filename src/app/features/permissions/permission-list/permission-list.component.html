@@ -1,18 +1,39 @@
 <section class="page">
   <header class="page__head">
-    <div><h1>Permissions</h1></div>
-    <a routerLink="/permissions/new" mat-flat-button color="primary" *hasPermission="'permission.write'">
-      <mat-icon>add</mat-icon> New permission
-    </a>
+    <div>
+      <h1>Permissions</h1>
+      <p class="muted small">Seeded from code (<code>seeds/permissions.py</code>). Name and description are editable here.</p>
+    </div>
+    <div class="page__actions">
+      <bms-filters [activeCount]="activeFilterCount()" (clear)="clearFilters()">
+        <mat-form-field appearance="outline">
+          <mat-label>Search key</mat-label>
+          <input matInput [formControl]="keyFilter" placeholder="e.g. building.read" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Search name</mat-label>
+          <input matInput [formControl]="nameFilter" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [formControl]="typeFilter">
+            <mat-option value="">All</mat-option>
+            <mat-option value="standard">Standard</mat-option>
+            <mat-option value="custom">Custom</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Used by role</mat-label>
+          <mat-select [formControl]="roleFilter">
+            <mat-option value="">Any role</mat-option>
+            @for (r of availableRoles(); track r) {
+              <mat-option [value]="r">{{ r }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </bms-filters>
+    </div>
   </header>
-
-  <div class="filters">
-    <mat-form-field appearance="outline" class="filters__search">
-      <mat-label>Filter permissions</mat-label>
-      <input matInput [formControl]="filter" placeholder="Key, name, or description" />
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-  </div>
 
   @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
   @if (error()) { <p class="error">{{ error() }}</p> }
@@ -41,15 +62,29 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="roles">
+        <th mat-header-cell *matHeaderCellDef>Used by</th>
+        <td mat-cell *matCellDef="let p">
+          @if (p.roles.length === 0) {
+            <span class="muted small">— not assigned to any role</span>
+          } @else {
+            <mat-chip-set>
+              @for (r of p.roles; track r.id) {
+                <a [routerLink]="['/roles', r.id, 'edit']" class="role-chip-link">
+                  <mat-chip [highlighted]="r.is_system">{{ r.name }}</mat-chip>
+                </a>
+              }
+            </mat-chip-set>
+          }
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let p" class="actions">
           <a [routerLink]="['/permissions', p.id, 'edit']" mat-icon-button aria-label="Edit" *hasPermission="'permission.write'">
             <mat-icon>edit</mat-icon>
           </a>
-          <button mat-icon-button color="warn" (click)="remove(p)" aria-label="Delete" *hasPermission="'permission.delete'">
-            <mat-icon>delete</mat-icon>
-          </button>
         </td>
       </ng-container>
 
@@ -58,7 +93,9 @@
 
       <tr class="mat-row" *matNoDataRow>
         <td class="empty" [attr.colspan]="displayedColumns.length">
-          @if (loading()) { Loading… } @else { No permissions. }
+          @if (loading()) { Loading… }
+          @else if (activeFilterCount() > 0) { No permissions match your filters. }
+          @else { No permissions. }
         </td>
       </tr>
     </table>
