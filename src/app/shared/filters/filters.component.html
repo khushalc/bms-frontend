@@ -1,0 +1,32 @@
+<button
+  mat-stroked-button
+  [matMenuTriggerFor]="menu"
+  [matBadge]="activeCount() || null"
+  matBadgeColor="accent"
+  matBadgeSize="small"
+  matBadgeOverlap="true"
+  matBadgePosition="above after"
+  class="filters-btn"
+>
+  <mat-icon>tune</mat-icon>
+  <span class="filters-btn__label">{{ label() }}</span>
+</button>
+
+<mat-menu #menu="matMenu" xPosition="before" class="filters-menu-panel">
+  <div class="filters-panel" (click)="stopPropagation($event)" (keydown)="stopPropagation($event)" (keydown.enter)="onEnter($event)">
+    <header class="filters-panel__head">
+      <strong>{{ label() }}</strong>
+    </header>
+    <div class="filters-panel__body">
+      <ng-content />
+    </div>
+    <footer class="filters-panel__foot">
+      <button mat-button (click)="onClear($event)" class="clear-btn">
+        <mat-icon>clear</mat-icon> Clear
+      </button>
+      <button mat-flat-button color="primary" (click)="onSearch($event)" class="search-btn">
+        <mat-icon>search</mat-icon> Search
+      </button>
+    </footer>
+  </div>
+</mat-menu>

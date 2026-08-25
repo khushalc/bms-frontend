@@ -1,0 +1,69 @@
+<section class="page">
+  <header class="page__head">
+    <div>
+      <h1>{{ id() ? 'Edit' : 'New' }} role</h1>
+      @if (isSystem()) { <p class="muted small">System role — name is locked; permissions are editable.</p> }
+    </div>
+    <a routerLink="/roles" class="btn btn--ghost">Cancel</a>
+  </header>
+
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="stack">
+      <fieldset class="fields" [disabled]="saving()">
+        <label class="field">
+          <span>Name</span>
+          <input type="text" formControlName="name" />
+        </label>
+        <label class="field">
+          <span>Description <small class="muted">(optional)</small></span>
+          <textarea formControlName="description" rows="2"></textarea>
+        </label>
+
+        <div class="perms">
+          <div class="perms__head">
+            <strong>Permissions</strong>
+            <span class="muted small">{{ selectedIds().size }} selected</span>
+          </div>
+
+          @for (g of groups(); track g.resource) {
+            <details class="group" open>
+              <summary class="group__head">
+                <label class="checkbox" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    [checked]="groupState(g) === 'all'"
+                    [indeterminate]="groupState(g) === 'some'"
+                    (change)="toggleGroup(g)"
+                  />
+                  <span>{{ g.resource }} <span class="muted small">({{ g.items.length }})</span></span>
+                </label>
+              </summary>
+              <div class="group__body">
+                @for (p of g.items; track p.id) {
+                  <label class="checkbox perm">
+                    <input type="checkbox" [checked]="isChecked(p.id)" (change)="toggle(p.id)" />
+                    <span>
+                      <code>{{ p.key }}</code>
+                      <span class="muted small"> {{ p.name }}</span>
+                    </span>
+                  </label>
+                }
+              </div>
+            </details>
+          }
+        </div>
+      </fieldset>
+
+      @if (error()) { <p class="error">{{ error() }}</p> }
+
+      <div class="actions">
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+          @if (saving()) { <span class="spinner" aria-hidden="true"></span> Saving… }
+          @else { Save }
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -1,0 +1,104 @@
+<section class="page">
+  @if (loading()) {
+    <p class="muted">Loading…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (flat(); as f) {
+
+    <header class="page__head">
+      <div>
+        <a routerLink="/flats" class="back">← Flats</a>
+        <h1>{{ f.number }}</h1>
+        @if (f.name_on_board) {
+          <p class="muted">{{ f.name_on_board }}</p>
+        }
+        <p class="small muted">
+          Floor {{ f.floor }} · Building #{{ f.building_id }} ·
+          {{ members().length }}/{{ f.declared_member_count }} members
+        </p>
+      </div>
+      <a [routerLink]="['/flats', f.id, 'edit']" class="btn btn--ghost" *hasPermission="'flat.write'">Edit flat</a>
+    </header>
+
+    <!-- Vehicles -->
+    <section class="block">
+      <h2>Vehicles</h2>
+      @if (f.vehicles.length === 0) {
+        <p class="muted small">No vehicles registered.</p>
+      } @else {
+        <ul class="list">
+          @for (v of f.vehicles; track v.id) {
+            <li class="list__item">
+              <div>
+                <strong>{{ v.type === 'car' ? '🚗' : '🏍️' }} {{ v.number }}</strong>
+                @if (v.brand || v.model) {
+                  <span class="muted small"> — {{ v.brand }} {{ v.model }}</span>
+                }
+              </div>
+              <button class="btn btn--danger btn--sm" (click)="removeVehicle(v.id)" *hasPermission="'vehicle.delete'">Remove</button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Members -->
+    <section class="block">
+      <div class="block__head">
+        <h2>Members</h2>
+        <button
+          class="btn btn--primary"
+          (click)="openAddMember()"
+          [disabled]="!canAddMember()"
+          *hasPermission="'member.write'"
+        >
+          + Add member
+        </button>
+      </div>
+
+      @if (!canAddMember() && members().length >= f.declared_member_count) {
+        <p class="muted small">
+          Reached declared member count ({{ f.declared_member_count }}). Update the flat to add more.
+        </p>
+      }
+
+      @if (members().length === 0) {
+        <p class="muted small">No members added yet.</p>
+      } @else {
+        <ul class="list">
+          @for (m of members(); track m.id) {
+            <li class="list__item member">
+              <div class="member__main">
+                <div class="member__row">
+                  <strong>{{ m.first_name }} {{ m.last_name }}</strong>
+                  @if (m.is_committee_member) {
+                    <span class="badge badge--committee">Committee</span>
+                  }
+                </div>
+                <p class="small muted">{{ roleLabel(m.role) }} · Age {{ m.age }}</p>
+                <p class="small">
+                  📱 {{ m.mobile }}
+                  @if (m.email) { · ✉️ {{ m.email }} }
+                </p>
+              </div>
+              <div class="member__actions">
+                <button class="btn btn--ghost btn--sm" (click)="openEditMember(m)" *hasPermission="'member.write'">Edit</button>
+                <button class="btn btn--danger btn--sm" (click)="removeMember(m)" *hasPermission="'member.delete'">Remove</button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Member form modal-ish -->
+    @if (showMemberForm()) {
+      <bms-member-form
+        [flatId]="f.id"
+        [memberId]="editingMemberId()"
+        (saved)="onMemberSaved()"
+        (cancelled)="onMemberCancel()"
+      />
+    }
+  }
+</section>

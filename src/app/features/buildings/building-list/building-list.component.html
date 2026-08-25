@@ -1,0 +1,117 @@
+<section class="page">
+  <header class="page__head">
+    <div><h1>Buildings</h1></div>
+    <div class="page__actions">
+      <bms-filters
+        [activeCount]="activeFilterCount()"
+        (search)="onSearch()"
+        (clear)="onClearAll()"
+      >
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput [formControl]="nameFilter" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Number</mat-label>
+          <input matInput [formControl]="numberFilter" placeholder="e.g. A, B1" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Address</mat-label>
+          <input matInput [formControl]="addressFilter" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Gym</mat-label>
+          <mat-select [formControl]="gymFilter">
+            <mat-option value="">Any</mat-option>
+            <mat-option value="yes">Has gym</mat-option>
+            <mat-option value="no">No gym</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Swimming pool</mat-label>
+          <mat-select [formControl]="poolFilter">
+            <mat-option value="">Any</mat-option>
+            <mat-option value="yes">Has pool</mat-option>
+            <mat-option value="no">No pool</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </bms-filters>
+      <a routerLink="/buildings/new" mat-flat-button color="primary" *hasPermission="'building.write'">
+        <mat-icon>add</mat-icon> New building
+      </a>
+    </div>
+  </header>
+
+  <bms-active-filters [chips]="activeChips()" (remove)="onRemoveChip($event)" />
+
+  @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+      <ng-container matColumnDef="number">
+        <th mat-header-cell *matHeaderCellDef>#</th>
+        <td mat-cell *matCellDef="let b"><strong>{{ b.number }}</strong></td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let b">{{ b.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th mat-header-cell *matHeaderCellDef>Address</th>
+        <td mat-cell *matCellDef="let b" class="muted">{{ b.address || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="floors">
+        <th mat-header-cell *matHeaderCellDef>Floors</th>
+        <td mat-cell *matCellDef="let b">{{ b.floor_count }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="flats">
+        <th mat-header-cell *matHeaderCellDef>Planned flats</th>
+        <td mat-cell *matCellDef="let b">{{ b.declared_flat_count || '—' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="amenities">
+        <th mat-header-cell *matHeaderCellDef>Amenities</th>
+        <td mat-cell *matCellDef="let b">
+          @if (b.has_gym) { <mat-icon class="amenity" aria-label="Gym">fitness_center</mat-icon> }
+          @if (b.has_swimming_pool) { <mat-icon class="amenity" aria-label="Pool">pool</mat-icon> }
+          @if (!b.has_gym && !b.has_swimming_pool) { <span class="muted">—</span> }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let b" class="actions">
+          <a [routerLink]="['/buildings', b.id, 'edit']" mat-icon-button *hasPermission="'building.write'" aria-label="Edit">
+            <mat-icon>edit</mat-icon>
+          </a>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="empty" [attr.colspan]="displayedColumns.length">
+          @if (loading()) { Loading… }
+          @else if (activeFilterCount() > 0) { No buildings match your filters. }
+          @else { No buildings yet. }
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator
+      [length]="total()"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      (page)="onPage($event)"
+      showFirstLastButtons
+    />
+  </div>
+</section>

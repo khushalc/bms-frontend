@@ -1,0 +1,68 @@
+@use '../../../styles/tokens' as t;
+@use '../../../styles/breakpoints' as bp;
+
+.shell {
+  height: 100vh;
+
+  &__nav {
+    width: 260px;
+    background: t.$color-surface;
+    border-right: 1px solid t.$color-border;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background: t.$color-bg;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: t.$space-2;
+  padding: t.$space-4;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--mat-sys-primary);
+}
+
+.nav {
+  padding-top: t.$space-2;
+
+  a {
+    // ensure tap targets are at least 44px (they are by default in mat-list-item)
+    &:hover { background: t.$color-bg; }
+  }
+
+  ::ng-deep .nav__item--active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    color: var(--mat-sys-primary);
+    .mat-icon { color: var(--mat-sys-primary); }
+  }
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: t.$color-surface;
+  border-bottom: 1px solid t.$color-border;
+  color: t.$color-text;
+
+  &__title { font-weight: 500; }
+  &__spacer { flex: 1 1 auto; }
+}
+
+.user-header {
+  display: flex;
+  flex-direction: column;
+  padding: t.$space-3 t.$space-4;
+  small { color: t.$color-muted; }
+}
+
+.page {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}

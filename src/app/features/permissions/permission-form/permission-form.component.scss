@@ -1,0 +1,62 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 640px; margin: 0 auto; padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: t.$space-3; margin-bottom: t.$space-4; flex-wrap: wrap;
+    h1 { margin: 0; font-size: 1.5rem; }
+  }
+}
+
+.stack { display: flex; flex-direction: column; gap: t.$space-4; }
+
+.fields {
+  border: 0; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: t.$space-3;
+  transition: opacity 0.15s;
+  &[disabled] { opacity: 0.55; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: t.$space-1;
+  > span { font-size: 0.875rem; color: t.$color-muted; }
+  input, textarea, select {
+    min-height: t.$tap-min;
+    padding: 0 t.$space-3;
+    border: 1px solid t.$color-border;
+    border-radius: t.$radius-sm;
+    background: t.$color-surface;
+  }
+  textarea { padding: t.$space-2 t.$space-3; }
+}
+
+.checkbox {
+  display: flex; align-items: center; gap: t.$space-2; min-height: t.$tap-min;
+  input[type="checkbox"] { width: 20px; height: 20px; }
+}
+
+.actions { display: flex; gap: t.$space-3; justify-content: flex-end; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: t.$tap-min; padding: 0 t.$space-4;
+  border-radius: t.$radius-sm; cursor: pointer; border: 0;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &--primary { background: t.$color-primary; color: white; }
+  &--ghost { background: transparent; border: 1px solid t.$color-border; }
+}
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+  border-radius: 50%; margin-right: t.$space-2;
+  animation: spin 0.7s linear infinite; vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error { color: t.$color-danger; margin: 0; font-size: 0.875rem; }
+.muted { color: t.$color-muted; }

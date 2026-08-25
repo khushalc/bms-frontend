@@ -1,0 +1,44 @@
+@use '../../../styles/tokens' as t;
+@use '../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 1200px; margin: 0 auto; padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    margin-bottom: t.$space-6;
+    h1 { margin: 0 0 t.$space-1; font-size: 1.75rem; }
+  }
+}
+
+.access {
+  &__row {
+    display: flex; flex-direction: column;
+    gap: t.$space-2;
+    padding: t.$space-3 0;
+    border-bottom: 1px solid t.$color-border;
+    &:last-child { border-bottom: 0; padding-bottom: 0; }
+    &:first-of-type { padding-top: 0; }
+
+    @include bp.up(sm) {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: t.$space-4;
+    }
+  }
+}
+
+.label {
+  font-size: 0.875rem;
+  color: t.$color-muted;
+  flex: 0 0 auto;
+  @include bp.up(sm) { min-width: 160px; }
+}
+
+.perm {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem !important;
+}
+
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }

@@ -1,0 +1,46 @@
+@use '../../../styles/tokens' as t;
+@use '../../../styles/breakpoints' as bp;
+
+.filters-btn {
+  &__label {
+    @media (max-width: 480px) { display: none; }
+  }
+}
+
+// mat-menu panel width override
+::ng-deep .filters-menu-panel {
+  max-width: none !important;
+  min-width: 300px;
+
+  @include bp.up(sm) { min-width: 380px; }
+}
+
+.filters-panel {
+  padding: t.$space-3 t.$space-4;
+  display: flex;
+  flex-direction: column;
+
+  &__head {
+    padding-bottom: t.$space-2;
+    border-bottom: 1px solid t.$color-border;
+    margin-bottom: t.$space-3;
+  }
+
+  &__body {
+    display: flex; flex-direction: column;
+    gap: t.$space-3;
+    mat-form-field { width: 100%; }
+  }
+
+  &__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: t.$space-2;
+    padding-top: t.$space-3;
+    margin-top: t.$space-2;
+    border-top: 1px solid t.$color-border;
+  }
+}
+
+.clear-btn { font-size: 0.85rem; }
+.search-btn mat-icon { margin-right: 4px; }

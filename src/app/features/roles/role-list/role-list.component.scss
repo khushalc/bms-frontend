@@ -1,0 +1,30 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 1200px; margin: 0 auto; padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: t.$space-3; margin-bottom: t.$space-4; flex-wrap: wrap;
+    h1 { margin: 0; font-size: 1.5rem; }
+  }
+  &__actions { display: flex; gap: t.$space-2; align-items: center; flex-wrap: wrap; }
+}
+
+.table-wrap { background: t.$color-surface; border-radius: t.$radius-md; overflow-x: auto; }
+table { width: 100%; }
+
+.actions { text-align: right; }
+
+.pill {
+  display: inline-block;
+  font-size: 0.7rem; padding: 2px t.$space-2; border-radius: 999px;
+  background: t.$color-bg; border: 1px solid t.$color-border;
+  &--system { background: var(--mat-sys-primary); color: white; border-color: transparent; }
+}
+
+.empty { padding: t.$space-6; text-align: center; color: t.$color-muted; }
+.error { color: t.$color-danger; margin: 0 0 t.$space-3; }
+.muted { color: t.$color-muted; }

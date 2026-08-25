@@ -1,0 +1,107 @@
+@use '../../../../../styles/tokens' as t;
+@use '../../../../../styles/breakpoints' as bp;
+
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 100;
+  padding: 0;
+
+  @include bp.up(md) {
+    align-items: center;
+    padding: t.$space-4;
+  }
+
+  &__panel {
+    width: 100%;
+    max-width: 640px;
+    max-height: 95vh;
+    overflow-y: auto;
+    background: t.$color-surface;
+    border-radius: t.$radius-md t.$radius-md 0 0;
+    padding: t.$space-4;
+
+    @include bp.up(md) {
+      border-radius: t.$radius-md;
+      padding: t.$space-6;
+    }
+  }
+
+  &__head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: t.$space-4;
+    h2 { margin: 0; font-size: 1.25rem; }
+  }
+}
+
+.close {
+  background: transparent; border: 0; font-size: 1.5rem; cursor: pointer;
+  min-width: t.$tap-min; min-height: t.$tap-min;
+}
+
+.stack { display: flex; flex-direction: column; gap: t.$space-3; }
+
+.fields {
+  border: 0; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: t.$space-3;
+  transition: opacity 0.15s;
+  &[disabled] { opacity: 0.55; }
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  margin-right: t.$space-2;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.row {
+  display: grid; gap: t.$space-3; grid-template-columns: 1fr;
+  @include bp.up(sm) { grid-template-columns: 1fr 1fr; }
+}
+
+.field {
+  display: flex; flex-direction: column; gap: t.$space-1;
+  span { font-size: 0.875rem; color: t.$color-muted; }
+  input, select, textarea {
+    min-height: t.$tap-min;
+    padding: 0 t.$space-3;
+    border: 1px solid t.$color-border;
+    border-radius: t.$radius-sm;
+    background: t.$color-surface;
+  }
+}
+
+.checkbox {
+  display: flex; align-items: center; gap: t.$space-2;
+  min-height: t.$tap-min;
+  input[type="checkbox"] { width: 20px; height: 20px; }
+}
+
+.actions {
+  display: flex; gap: t.$space-3; justify-content: flex-end;
+  padding-top: t.$space-3;
+  border-top: 1px solid t.$color-border;
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: t.$tap-min; padding: 0 t.$space-4;
+  border-radius: t.$radius-sm; cursor: pointer; border: 0;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &--primary { background: t.$color-primary; color: white; }
+  &--ghost { background: transparent; border: 1px solid t.$color-border; }
+}
+
+.error { color: t.$color-danger; margin: 0; }
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }

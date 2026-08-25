@@ -1,0 +1,42 @@
+@use '../../../../styles/tokens' as t;
+@use '../../../../styles/breakpoints' as bp;
+
+.page {
+  max-width: 1400px; margin: 0 auto; padding: t.$space-4;
+  @include bp.up(md) { padding: t.$space-6; }
+
+  &__head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: t.$space-3; margin-bottom: t.$space-4; flex-wrap: wrap;
+    h1 { margin: 0 0 t.$space-1; font-size: 1.5rem; }
+  }
+}
+
+.table-wrap { background: t.$color-surface; border-radius: t.$radius-md; overflow-x: auto; }
+table { width: 100%; }
+
+.actions { text-align: right; }
+
+code {
+  background: t.$color-bg; padding: 2px 6px; border-radius: t.$radius-sm;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85rem;
+}
+
+.pill {
+  display: inline-block;
+  font-size: 0.7rem; padding: 2px t.$space-2; border-radius: 999px;
+  background: t.$color-bg; border: 1px solid t.$color-border;
+  &--custom { background: t.$color-success; color: white; border-color: transparent; }
+}
+
+.role-chip-link {
+  text-decoration: none;
+  display: inline-block;
+  margin: 2px;
+}
+
+.cell-sub { font-size: 0.8rem; color: t.$color-muted; margin-top: 2px; }
+.empty { padding: t.$space-6; text-align: center; color: t.$color-muted; }
+.error { color: t.$color-danger; margin: 0 0 t.$space-3; }
+.muted { color: t.$color-muted; }
+.small { font-size: 0.875rem; }
