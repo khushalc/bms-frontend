@@ -15,6 +15,15 @@ import { FlatApiService } from '../../../core/services/flat-api.service';
 import { Building } from '../../../core/models/building.model';
 import { VehicleCreate, VehicleType } from '../../../core/models/vehicle.model';
 
+/**
+ * Flat create/edit form. Create mode allows adding initial vehicles
+ * inline (car/bike FormArrays). Edit mode disables the Building select
+ * (a flat can't move buildings) and hides the vehicle repeaters
+ * (vehicles are managed on the flat detail page).
+ *
+ * Building select is a `.valueChanges` subscriber — picking a Building
+ * re-fetches its floor list and populates the Floor <select>.
+ */
 @Component({
   selector: 'bms-flat-form',
   standalone: true,

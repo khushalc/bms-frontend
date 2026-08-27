@@ -29,19 +29,32 @@ export class HasPermissionDirective {
   private rendered = false;
 
   constructor() {
+    // effect() runs when `auth.permissions` changes so the directive
+    // reactively creates/destroys the embedded view when the user signs
+    // in, signs out, or gains/loses a role at runtime.
     effect(() => {
-      // touch signals so we re-run on auth changes
+      // touch the signal so effect() tracks it as a dependency
       this.auth.permissions();
       this.sync();
     });
   }
 
+  /**
+   * The permission key(s) this template requires. Accepts a single string
+   * OR an array — array form requires ALL of them (AND semantics), matching
+   * the backend's `require_permission` dependency.
+   */
   @Input()
   set hasPermission(value: string | string[]) {
     this.required = Array.isArray(value) ? value : [value];
     this.sync();
   }
 
+  /**
+   * Create the embedded view when the caller holds every required key,
+   * clear it when they don't. Idempotent — checks `rendered` state to
+   * avoid creating duplicate views on repeated signal ticks.
+   */
   private sync(): void {
     const ok = this.required.every((p) => this.auth.hasPermission(p));
     if (ok && !this.rendered) {

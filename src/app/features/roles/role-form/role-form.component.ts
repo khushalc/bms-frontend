@@ -12,6 +12,15 @@ interface PermissionGroup {
   items: Permission[];
 }
 
+/**
+ * Role create/edit form. The centerpiece is a permission picker
+ * grouped by resource — parses each key's `resource.action` prefix so
+ * every "building.*", "flat.*", etc. sits under one collapsible group
+ * with a per-group indeterminate "select all" checkbox.
+ *
+ * System roles keep their name locked (server rejects renames) but
+ * permissions can still be edited.
+ */
 @Component({
   selector: 'bms-role-form',
   standalone: true,

@@ -25,6 +25,11 @@ interface AppliedFilters {
 }
 const EMPTY: AppliedFilters = { name: '', desc: '', type: '' };
 
+/**
+ * Roles list — visible role catalog with per-field filter (Name /
+ * Description / System-or-custom). System roles hide the delete
+ * action because the backend refuses to delete them anyway.
+ */
 @Component({
   selector: 'bms-role-list',
   standalone: true,

@@ -17,8 +17,14 @@ import { HasPermissionDirective } from '../../../shared/directives/has-permissio
 import { ActiveFiltersComponent, ActiveFilterChip } from '../../../shared/filters/active-filters.component';
 import { FiltersComponent } from '../../../shared/filters/filters.component';
 
+/** Ternary "any / yes / no" for optional boolean filter dropdowns. */
 type YesNoAny = '' | 'yes' | 'no';
 
+/**
+ * Values actually applied to the client-side filter predicate. Kept
+ * separate from the FormControls so filters only take effect when the
+ * user clicks Search (not on every keystroke).
+ */
 interface AppliedFilters {
   name: string;
   number: string;
@@ -28,6 +34,12 @@ interface AppliedFilters {
 }
 const EMPTY: AppliedFilters = { name: '', number: '', address: '', gym: '', pool: '' };
 
+/**
+ * Buildings list page. Server-side pagination + client-side filter over
+ * the current page (see filterPredicate). Filters come from a
+ * hamburger menu (bms-filters) and appear as removable chips
+ * (bms-active-filters) above the table.
+ */
 @Component({
   selector: 'bms-building-list',
   standalone: true,
@@ -76,6 +88,11 @@ export class BuildingListComponent implements OnInit {
 
   @ViewChild(MatPaginator) private paginator?: MatPaginator;
 
+  /**
+   * Register the filter predicate (reads from `applied`, not from
+   * FormControls — so filters only take effect when the user commits
+   * via Search) and kick off the initial page load.
+   */
   ngOnInit(): void {
     this.dataSource.filterPredicate = (b) => {
       const a = this.applied();
@@ -91,6 +108,7 @@ export class BuildingListComponent implements OnInit {
     this.load();
   }
 
+  /** Fetch the current page from the backend and refresh the table. */
   load(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -108,12 +126,15 @@ export class BuildingListComponent implements OnInit {
     });
   }
 
+  /** MatPaginator (page, page_size) change → refetch. */
   onPage(e: PageEvent): void {
     this.pageIndex.set(e.pageIndex);
     this.pageSize.set(e.pageSize);
     this.load();
   }
 
+  /** (search) from bms-filters: snapshot FormControl values into
+   *  `applied` and re-run the filter. */
   onSearch(): void {
     this.applied.set({
       name: this.nameFilter.value.trim(),
@@ -125,6 +146,7 @@ export class BuildingListComponent implements OnInit {
     this.reapplyFilter();
   }
 
+  /** (clear) from bms-filters: reset every FormControl and `applied`. */
   onClearAll(): void {
     this.nameFilter.setValue('');
     this.numberFilter.setValue('');
@@ -135,6 +157,8 @@ export class BuildingListComponent implements OnInit {
     this.reapplyFilter();
   }
 
+  /** (remove) from bms-active-filters: reset just the field the user
+   *  X'd on the chip row and reapply. */
   onRemoveChip(key: string): void {
     const control = ({
       name: this.nameFilter, number: this.numberFilter, address: this.addressFilter,
@@ -145,6 +169,11 @@ export class BuildingListComponent implements OnInit {
     this.reapplyFilter();
   }
 
+  /**
+   * Poke the MatTableDataSource so it re-runs filterPredicate. Passing
+   * a unique string when any filter is active; empty string when none
+   * (which also disables filtering entirely).
+   */
   private reapplyFilter(): void {
     // toggling .filter to a unique value triggers MatTableDataSource to re-evaluate filterPredicate
     this.dataSource.filter = this.activeFilterCount() === 0 ? '' : String(Date.now());

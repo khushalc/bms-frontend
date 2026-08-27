@@ -10,6 +10,18 @@ import { FlatMemberListItem } from '../../../core/models/flat-member.model';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { MemberFormComponent } from '../members/member-form/member-form.component';
 
+/**
+ * Flat detail page. Loads flat + members in parallel and shows both
+ * on one screen. Vehicles come embedded in the flat detail response
+ * (server-side eager load).
+ *
+ * Composes MemberFormComponent as a modal so member add/edit doesn't
+ * navigate away from this page.
+ *
+ * `canAddMember` mirrors the backend's capacity guard so the "Add
+ * member" button disables at the limit (server rejects too, but this
+ * saves a roundtrip).
+ */
 @Component({
   selector: 'bms-flat-detail',
   standalone: true,

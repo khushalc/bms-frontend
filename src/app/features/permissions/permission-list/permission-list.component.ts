@@ -31,6 +31,12 @@ interface AppliedFilters {
 }
 const EMPTY: AppliedFilters = { key: '', name: '', type: '', role: '' };
 
+/**
+ * Permissions list (view + edit only — creation is code-managed via
+ * `seeds/permissions.py`). The "Used by" column shows which roles
+ * hold each permission as clickable role chips; users can jump from
+ * "who uses `building.write`?" to the role editor in one click.
+ */
 @Component({
   selector: 'bms-permission-list',
   standalone: true,
