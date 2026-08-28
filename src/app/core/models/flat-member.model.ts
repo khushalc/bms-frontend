@@ -22,6 +22,8 @@ export interface FlatMember extends BaseEntity {
   role: MemberRole;
   is_committee_member: boolean;
   committee_letter_path: string | null;
+  /** Soft-disable flag (distinct from soft-delete). False = greyed in UI. */
+  is_active: boolean;
 }
 
 /** Listing shape — mobile/email are already masked by the server. */
@@ -35,6 +37,7 @@ export interface FlatMemberListItem extends BaseEntity {
   email: string | null;
   role: MemberRole;
   is_committee_member: boolean;
+  is_active: boolean;
 }
 
 /**

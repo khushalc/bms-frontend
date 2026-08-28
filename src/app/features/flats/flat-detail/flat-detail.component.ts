@@ -101,6 +101,21 @@ export class FlatDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Toggle a member's is_active flag. Server enforces the "family-role
+   * only for non-admins" rule and 403s if the actor isn't allowed —
+   * we surface the error message inline.
+   */
+  toggleMemberActive(m: FlatMemberListItem): void {
+    const next = !m.is_active;
+    const verb = next ? 'Re-enable' : 'Disable';
+    if (!confirm(`${verb} ${m.first_name} ${m.last_name}?`)) return;
+    this.memberApi.setActive(m.flat_id, m.id, next).subscribe({
+      next: () => this.load(),
+      error: (err) => alert(err?.error?.message ?? `${verb} failed`),
+    });
+  }
+
   removeVehicle(vehicleId: number): void {
     const f = this.flat();
     if (!f) return;

@@ -1,6 +1,9 @@
 <section class="page">
   <header class="page__head">
-    <h1>{{ id() ? 'Edit' : 'New' }} flat</h1>
+    <div>
+      <a routerLink="/flats" class="back">← Back to flats</a>
+      <h1>{{ id() ? 'Edit' : 'New' }} flat</h1>
+    </div>
     <a routerLink="/flats" class="btn btn--ghost">Cancel</a>
   </header>
 

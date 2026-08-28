@@ -52,6 +52,12 @@
     display: flex; gap: t.$space-2;
     @media (max-width: 480px) { width: 100%; }
   }
+
+  // Grey out disabled members but keep them visible; the actions row
+  // stays interactive so an admin can re-enable.
+  &--disabled {
+    .member__main { opacity: 0.55; }
+  }
 }
 
 .badge {
@@ -62,6 +68,7 @@
   color: white;
 
   &--committee { background: t.$color-success; }
+  &--disabled  { background: t.$color-muted; }
 }
 
 .btn {

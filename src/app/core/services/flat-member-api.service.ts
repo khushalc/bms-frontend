@@ -52,6 +52,19 @@ export class FlatMemberApiService extends BaseService {
     return this.http.patch<FlatMember>(`${this.base(flatId)}/${memberId}`, payload);
   }
 
+  /**
+   * PATCH /flats/{flatId}/members/{memberId}/active — toggle the
+   * soft-disable flag. Distinct from delete: the row stays visible in
+   * listings but is greyed out. Server enforces the "family-role only
+   * for non-admins" rule and returns 403 otherwise.
+   */
+  setActive(flatId: number, memberId: number, isActive: boolean): Observable<FlatMember> {
+    return this.http.patch<FlatMember>(
+      `${this.base(flatId)}/${memberId}/active`,
+      { is_active: isActive },
+    );
+  }
+
   /** Soft-delete. Linked user account is NOT deleted. */
   delete(flatId: number, memberId: number): Observable<void> {
     return this.http.delete<void>(`${this.base(flatId)}/${memberId}`);
