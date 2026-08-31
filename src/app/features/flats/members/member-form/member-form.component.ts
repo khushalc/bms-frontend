@@ -20,6 +20,19 @@ import {
   MemberRole,
 } from '../../../../core/models/flat-member.model';
 
+/**
+ * Modal form used by FlatDetailComponent to create / edit a FlatMember.
+ * Emits `saved` on success (parent closes + reloads) or `cancelled`.
+ *
+ * Cross-field UX (mirrors backend validation):
+ *   - `letterRequired` (family + committee): reveals the file upload;
+ *     Save is blocked until upload succeeds.
+ *   - In create mode, `create_user=true` reveals a password field and
+ *     the backend mints a User bound to this member with the FlatMember
+ *     role only (never admin).
+ *   - In edit mode, the create-user affordance is disabled because the
+ *     linked User can't be recreated here.
+ */
 @Component({
   selector: 'bms-member-form',
   standalone: true,

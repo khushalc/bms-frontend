@@ -1,6 +1,7 @@
 <section class="page">
   <header class="page__head">
     <div>
+      <a routerLink="/roles" class="back">← Back to roles</a>
       <h1>{{ id() ? 'Edit' : 'New' }} role</h1>
       @if (isSystem()) { <p class="muted small">System role — name is locked; permissions are editable.</p> }
     </div>

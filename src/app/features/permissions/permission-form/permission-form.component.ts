@@ -5,6 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { PermissionApiService } from '../../../core/services/permission-api.service';
 
+/**
+ * Permission edit form. Reachable only via `/permissions/:id/edit` —
+ * creation is code-managed in `seeds/permissions.py`, so this form
+ * always runs in edit mode with `key` and `is_custom` locked. Only
+ * `name` and `description` are user-editable.
+ */
 @Component({
   selector: 'bms-permission-form',
   standalone: true,

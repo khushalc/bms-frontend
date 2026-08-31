@@ -5,6 +5,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { BuildingApiService } from '../../../core/services/building-api.service';
 
+/**
+ * Building create/edit form. Same component handles both:
+ * an `:id` route param switches to edit mode (loads the row on init,
+ * PATCHes on save); otherwise POSTs a new building on save.
+ */
 @Component({
   selector: 'bms-building-form',
   standalone: true,
@@ -35,6 +40,11 @@ export class BuildingFormComponent implements OnInit {
     has_swimming_pool: [false],
   });
 
+  /**
+   * On mount, check for an `:id` route param. Present → edit mode:
+   * fetch the row and patch the form. Absent → create mode: form
+   * stays with its default values.
+   */
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -61,6 +71,13 @@ export class BuildingFormComponent implements OnInit {
     }
   }
 
+  /**
+   * Persist the form. Empty optional strings are normalized to null so
+   * the backend treats them as "unset" rather than "set to empty" —
+   * matters for future validators that would reject empty-string
+   * addresses / GST numbers. In edit mode PATCHes; otherwise POSTs.
+   * On success navigates back to the list.
+   */
   submit(): void {
     if (this.form.invalid || this.saving()) return;
     this.saving.set(true);

@@ -1,3 +1,8 @@
+/**
+ * Sidenav item shape. Icons come from Material Icons (loaded via
+ * index.html). Add a new page → add a NavItem here and it renders
+ * in the sidenav automatically.
+ */
 export interface NavItem {
   path: string;
   label: string;
@@ -8,6 +13,11 @@ export interface NavItem {
   exact?: boolean;
 }
 
+/**
+ * Ordered top-level nav. Items are hidden for users lacking the
+ * `permission` key (checked in AppShellComponent.canSee). Dashboard has
+ * `exact: true` so it doesn't highlight as active on every deeper route.
+ */
 export const NAV_ITEMS: NavItem[] = [
   { path: '/', label: 'Dashboard', icon: 'dashboard', exact: true },
   { path: '/buildings', label: 'Buildings', icon: 'apartment', permission: 'building.read' },

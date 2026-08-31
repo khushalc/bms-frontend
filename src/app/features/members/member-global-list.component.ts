@@ -31,6 +31,12 @@ interface AppliedFilters {
 }
 const EMPTY: AppliedFilters = { search: '', buildingId: '', role: '', committee: '' };
 
+/**
+ * Cross-flat, cross-building members list (sidenav → Members). Unlike
+ * the per-flat list, filtering happens SERVER-side (the total member
+ * population can be large). Filter state lives in `applied` and drives
+ * the query; the FormControls hold pending values until (search) fires.
+ */
 @Component({
   selector: 'bms-member-global-list',
   standalone: true,
