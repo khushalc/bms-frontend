@@ -85,3 +85,14 @@ export interface UploadedFile {
   filename: string;
   size: number;
 }
+
+/**
+ * Response from POST /flats/{flatId}/members/{memberId}/password-reset-link.
+ * `token` is the raw one-time token (only shown once). `url` embeds
+ * it in a shareable link ready to send to the recipient.
+ */
+export interface PasswordResetLink {
+  token: string;
+  expires_at: string;
+  url: string;
+}

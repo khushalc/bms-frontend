@@ -14,6 +14,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/forbidden.component').then((m) => m.ForbiddenComponent),
   },
+  // Public — reset-password link recipients aren't signed in.
+  {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
+  },
 
   // Everything authed lives inside the AppShell (sidenav + toolbar).
   {
@@ -27,6 +35,14 @@ export const routes: Routes = [
         pathMatch: 'full',
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      },
+      // Account — self-serve change password
+      {
+        path: 'account/change-password',
+        loadComponent: () =>
+          import('./features/account/change-password.component').then(
+            (m) => m.ChangePasswordComponent,
+          ),
       },
 
       // Buildings

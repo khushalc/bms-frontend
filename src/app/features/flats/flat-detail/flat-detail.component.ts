@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { FlatApiService } from '../../../core/services/flat-api.service';
 import { FlatMemberApiService } from '../../../core/services/flat-member-api.service';
 import { Flat } from '../../../core/models/flat.model';
-import { FlatMemberListItem } from '../../../core/models/flat-member.model';
+import { FlatMemberListItem, PasswordResetLink } from '../../../core/models/flat-member.model';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
 import { MemberFormComponent } from '../members/member-form/member-form.component';
 
@@ -42,6 +42,11 @@ export class FlatDetailComponent implements OnInit {
 
   showMemberForm = signal(false);
   editingMemberId = signal<number | null>(null);
+
+  // Password reset link — populated after generation, cleared on close.
+  resetLink = signal<PasswordResetLink | null>(null);
+  resetLinkFor = signal<FlatMemberListItem | null>(null);
+  copied = signal(false);
 
   canAddMember = computed(() => {
     const f = this.flat();
@@ -124,6 +129,41 @@ export class FlatDetailComponent implements OnInit {
       next: () => this.load(),
       error: (err) => alert(err?.error?.message ?? 'Delete failed'),
     });
+  }
+
+  /**
+   * Generate a one-time password reset link for a family member. Server
+   * gates on admin/committee OR primary/co-applicant of same flat and
+   * rejects non-family targets — we surface any rejection inline.
+   * The link modal shows the URL + a Copy button; the caller forwards
+   * it manually via WhatsApp/SMS.
+   */
+  generateResetLink(m: FlatMemberListItem): void {
+    this.memberApi
+      .generatePasswordResetLink(m.flat_id, m.id, window.location.origin)
+      .subscribe({
+        next: (link) => {
+          this.resetLink.set(link);
+          this.resetLinkFor.set(m);
+          this.copied.set(false);
+        },
+        error: (err) => alert(err?.error?.message ?? 'Failed to generate link'),
+      });
+  }
+
+  copyLink(): void {
+    const url = this.resetLink()?.url;
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(
+      () => this.copied.set(true),
+      () => alert('Copy failed — please select and copy manually.'),
+    );
+  }
+
+  closeResetLink(): void {
+    this.resetLink.set(null);
+    this.resetLinkFor.set(null);
+    this.copied.set(false);
   }
 
   roleLabel(role: string): string {

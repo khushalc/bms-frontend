@@ -89,6 +89,11 @@
                 <button class="btn btn--ghost btn--sm" (click)="toggleMemberActive(m)" *hasPermission="'member.disable'">
                   {{ m.is_active ? 'Disable' : 'Enable' }}
                 </button>
+                @if (m.role === 'family' && m.user_id) {
+                  <button class="btn btn--ghost btn--sm" (click)="generateResetLink(m)">
+                    Reset password
+                  </button>
+                }
                 <button class="btn btn--danger btn--sm" (click)="removeMember(m)" *hasPermission="'member.delete'">Remove</button>
               </div>
             </li>
@@ -105,6 +110,36 @@
         (saved)="onMemberSaved()"
         (cancelled)="onMemberCancel()"
       />
+    }
+
+    <!-- Password reset link modal -->
+    @if (resetLink(); as link) {
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal__panel">
+          <header class="modal__head">
+            <h2>Password reset link</h2>
+            <button type="button" class="close" (click)="closeResetLink()" aria-label="Close">×</button>
+          </header>
+          <p class="small">
+            One-time link for
+            <strong>{{ resetLinkFor()?.first_name }} {{ resetLinkFor()?.last_name }}</strong>.
+            Send it via WhatsApp/SMS — it expires at
+            <strong>{{ link.expires_at | date:'short' }}</strong>.
+          </p>
+          <div class="link-box">
+            <input readonly class="link-box__url" [value]="link.url" (click)="$event.target && ($event.target)['select']()" />
+            <button class="btn btn--primary btn--sm" (click)="copyLink()">
+              {{ copied() ? 'Copied ✓' : 'Copy' }}
+            </button>
+          </div>
+          <p class="muted small">
+            This link is shown only once and can be used a single time. If lost, generate a new one.
+          </p>
+          <div class="actions">
+            <button class="btn btn--ghost" (click)="closeResetLink()">Done</button>
+          </div>
+        </div>
+      </div>
     }
   }
 </section>

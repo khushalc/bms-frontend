@@ -85,3 +85,40 @@
 .muted { color: t.$color-muted; }
 .small { font-size: 0.875rem; }
 .error { color: t.$color-danger; }
+
+// Password reset link modal
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  padding: t.$space-4;
+}
+.modal__panel {
+  width: 100%; max-width: 520px;
+  background: t.$color-surface;
+  border-radius: t.$radius-md;
+  padding: t.$space-4;
+}
+.modal__head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: t.$space-3;
+  h2 { margin: 0; font-size: 1.15rem; }
+}
+.close {
+  background: transparent; border: 0; font-size: 1.5rem; cursor: pointer;
+  min-width: t.$tap-min; min-height: t.$tap-min;
+}
+.link-box {
+  display: flex; gap: t.$space-2; margin: t.$space-3 0;
+  &__url {
+    flex: 1; min-width: 0;
+    padding: 0 t.$space-3;
+    border: 1px solid t.$color-border;
+    border-radius: t.$radius-sm;
+    background: t.$color-bg;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85rem;
+  }
+}
+.actions { display: flex; gap: t.$space-3; justify-content: flex-end; margin-top: t.$space-4; }

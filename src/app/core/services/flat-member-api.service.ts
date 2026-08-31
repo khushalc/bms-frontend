@@ -6,6 +6,7 @@ import {
   FlatMemberCreate,
   FlatMemberListItem,
   FlatMemberUpdate,
+  PasswordResetLink,
   UploadedFile,
 } from '../models/flat-member.model';
 import { BaseService } from './base.service';
@@ -62,6 +63,23 @@ export class FlatMemberApiService extends BaseService {
     return this.http.patch<FlatMember>(
       `${this.base(flatId)}/${memberId}/active`,
       { is_active: isActive },
+    );
+  }
+
+  /**
+   * POST /flats/{flatId}/members/{memberId}/password-reset-link.
+   * Returns { token, expires_at, url } for a one-time reset. Server
+   * enforces: target is role=family with a linked user; caller is
+   * admin, committee, or primary/co-applicant of the same flat.
+   */
+  generatePasswordResetLink(
+    flatId: number,
+    memberId: number,
+    baseUrl: string,
+  ): Observable<PasswordResetLink> {
+    return this.http.post<PasswordResetLink>(
+      `${this.base(flatId)}/${memberId}/password-reset-link`,
+      { base_url: baseUrl },
     );
   }
 
